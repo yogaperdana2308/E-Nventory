@@ -4,12 +4,13 @@ class tambahJualButton extends StatelessWidget {
   final String label;
   final IconData icon;
   final Color color;
-
+  final Widget? tujuan;
   const tambahJualButton({
     super.key,
     required this.label,
     required this.icon,
     required this.color,
+    this.tujuan,
   });
 
   @override
@@ -17,9 +18,13 @@ class tambahJualButton extends StatelessWidget {
     return InkWell(
       onTap: () {
         // Aksi saat ditekan
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => tujuan!),
+        );
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text("$label ditekan")));
+        ).showSnackBar(SnackBar(content: Text("menambahkan $label")));
       },
       borderRadius: BorderRadius.circular(30),
       child: Container(

@@ -1,3 +1,4 @@
+import 'package:enventory/view/botton_navigasi.dart';
 import 'package:enventory/view/home_page.dart';
 import 'package:enventory/view/login_screen.dart';
 import 'package:enventory/view/register_screen.dart';
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.greenAccent),
       ),
-      home: HomePageProject(),
+      home: NavBottom(),
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'package:enventory/view/input_barang.dart';
+import 'package:enventory/view/jual_barang.dart';
 import 'package:enventory/widget/homePage.dart';
 import 'package:enventory/widget/inventoryItem.dart';
 import 'package:enventory/widget/tambahJualButton.dart';
@@ -16,7 +18,7 @@ class _HomePageProjectState extends State<HomePageProject> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: Color(0xffF5EFE6),
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
         child: Padding(
@@ -231,49 +233,49 @@ class _HomePageProjectState extends State<HomePageProject> {
                     label: "Tambah Barang",
                     icon: Icons.add,
                     color: Color(0xFFFF9800), // oranye
+                    tujuan: InputItem(),
                   ),
                   SizedBox(width: 16),
                   tambahJualButton(
                     label: "Jual Barang",
                     icon: Icons.shopping_cart_outlined,
                     color: Color(0xFF00BCD4), // biru toska
+                    tujuan: JualBarang(),
                   ),
                 ],
               ),
 
               //List Barang
+              SizedBox(height: 16),
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 6,
-                      offset: Offset(0, 3),
+                      color: const Color.fromARGB(
+                        255,
+                        175,
+                        175,
+                        175,
+                      ).withOpacity(0.6),
+                      spreadRadius: 3,
+                      blurRadius: 20,
                     ),
                   ],
                 ),
+
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Judul dan tombol lihat semua
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text(
-                          "Status Inventori",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          "Lihat Semua",
-                          style: TextStyle(color: Colors.blue),
-                        ),
-                      ],
+                    Text(
+                      "Status Inventori",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     // Item 1
