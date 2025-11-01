@@ -167,7 +167,9 @@ class _LoginScreenProjectState extends State<LoginScreenProject> {
                         ),
 
                         LoginButton(
-                          onPress: () {},
+                          onPress: () {
+                            Navigator.pushNamed(context, '/home_page.dart' );
+                          },
                           label: 'Login',
                           isLogin: true,
                         ),

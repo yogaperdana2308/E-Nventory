@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       routes: {
         '/register_screen': (context) => RegisterScreenProject(),
+        '/home_page': (context) => HomePageProject(),
         '/login_screen': (context) => LoginScreenProject(),
       },
       title: 'E-Nventory',
