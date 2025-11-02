@@ -1,199 +1,179 @@
 import 'package:flutter/material.dart';
 
+void main() {
+  runApp(
+    const MaterialApp(home: InputItem(), debugShowCheckedModeBanner: false),
+  );
+}
+
 class InputItem extends StatefulWidget {
   const InputItem({super.key});
 
   @override
-  State<InputItem> createState() => _InputItemPageState();
+  State<InputItem> createState() => _InputItemState();
 }
 
-class _InputItemPageState extends State<InputItem> {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController purchaseController = TextEditingController();
-  final TextEditingController sellingController = TextEditingController();
-  final TextEditingController stockController = TextEditingController();
-  String? selectedCategory;
+class _InputItemState extends State<InputItem> {
+  final _formKey = GlobalKey<FormState>();
+  final _itemNameController = TextEditingController();
+  final _purchasePriceController = TextEditingController();
+  final _sellingPriceController = TextEditingController();
+  final _stockQuantityController = TextEditingController();
+
+  @override
+  void dispose() {
+    _itemNameController.dispose();
+    _purchasePriceController.dispose();
+    _sellingPriceController.dispose();
+    _stockQuantityController.dispose();
+    super.dispose();
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Data berhasil disimpan!')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F6F7),
       appBar: AppBar(
-        title: const Text('Add Item'),
-        backgroundColor: Colors.cyan[600],
-        foregroundColor: Colors.white,
+        title: const Text('Tambah Item', style: TextStyle(color: Colors.black)),
         centerTitle: true,
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Item Name *", style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 6),
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                hintText: 'e.g., Minyak Goreng',
-                filled: true,
-                fillColor: Colors.grey[100],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            Text("Category *", style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 6),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.grey[100],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-              hint: const Text("Select category"),
-              initialValue: selectedCategory,
-              onChanged: (value) {
-                setState(() => selectedCategory = value);
-              },
-              items: ['Sembako', 'Minuman', 'Snack']
-                  .map((cat) => DropdownMenuItem(value: cat, child: Text(cat)))
-                  .toList(),
-            ),
-            const SizedBox(height: 16),
-
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Purchase Price *",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 6),
-                      TextField(
-                        controller: purchaseController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          hintText: '0',
-                          filled: true,
-                          fillColor: Colors.grey[100],
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Selling Price *",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 6),
-                      TextField(
-                        controller: sellingController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          hintText: '0',
-                          filled: true,
-                          fillColor: Colors.grey[100],
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-
-            Text(
-              "Stock Quantity *",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 6),
-            TextField(
-              controller: stockController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                hintText: '0',
-                filled: true,
-                fillColor: Colors.grey[100],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-            const SizedBox(height: 30),
-
-            // Tombol Aksi
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
+            padding: const EdgeInsets.all(20),
+            width: 400,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Item Name
+                  TextFormField(
+                    controller: _itemNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Nama Item *',
+                      border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      side: BorderSide(color: Colors.grey.shade400),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
-                    onPressed: () {
-                      Navigator.pop(context); // kembali ke halaman sebelumnya
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Nama item wajib diisi';
+                      }
+                      return null;
                     },
-                    child: const Text(
-                      "Cancel",
-                      style: TextStyle(color: Colors.black87),
-                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
+                  const SizedBox(height: 16),
+
+                  // Harga Beli
+                  TextFormField(
+                    controller: _purchasePriceController,
+                    decoration: InputDecoration(
+                      labelText: 'Harga Beli *',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Harga Beli wajib diisi';
+                      }
+                      final price = double.tryParse(value);
+                      if (price == null || price <= 0) {
+                        return 'Harga Beli harus lebih dari 0';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Harga Jual
+                  TextFormField(
+                    controller: _sellingPriceController,
+                    decoration: InputDecoration(
+                      labelText: 'Harga Jual *',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Harga jual wajib diisi';
+                      }
+                      final price = double.tryParse(value);
+                      if (price == null || price <= 0) {
+                        return 'Harga Jual harus lebih dari 0';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Banyak Stok
+                  TextFormField(
+                    controller: _stockQuantityController,
+                    decoration: InputDecoration(
+                      labelText: 'Banyak Stok *',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Banyak Stok wajib diisi';
+                      }
+                      final qty = int.tryParse(value);
+                      if (qty == null || qty <= 0) {
+                        return 'Banyak Stok harus lebih dari 0';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Submit Button
+                  ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.cyan[600],
+                      backgroundColor: Color(0xFFFF9800),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
-                    onPressed: () {
-                      // 📦 TODO: Simpan data ke database atau list
-                      print("Item: ${nameController.text}");
-                      print("Category: $selectedCategory");
-                      print("Purchase Price: ${purchaseController.text}");
-                      print("Selling Price: ${sellingController.text}");
-                      print("Stock: ${stockController.text}");
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Item berhasil disimpan!'),
-                        ),
-                      );
-                    },
-                    child: const Text("Save Item"),
+                    onPressed: _submitForm,
+                    child: const Text(
+                      'Simpan',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -24,7 +24,7 @@ class tambahJualButton extends StatelessWidget {
         );
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text("menambahkan $label")));
+        ).showSnackBar(SnackBar(content: Text(label)));
       },
       borderRadius: BorderRadius.circular(30),
       child: Container(

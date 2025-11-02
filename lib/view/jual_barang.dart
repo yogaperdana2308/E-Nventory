@@ -25,9 +25,9 @@ class _JualBarangState extends State<JualBarang> {
   ];
 
   final currencyFormat = NumberFormat.currency(
-    locale: 'id_ID',
+    // locale: 'id_ID',
     symbol: 'Rp ',
-    decimalDigits: 0,
+    decimalDigits: 1,
   );
 
   void calculateTotal() {
