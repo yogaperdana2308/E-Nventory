@@ -1,4 +1,4 @@
-import 'package:enventory/view/botton_navigasi.dart';
+import 'package:enventory/view/bottom_navigasi.dart';
 import 'package:enventory/view/home_page.dart';
 import 'package:enventory/view/login_screen.dart';
 import 'package:enventory/view/register_screen.dart';
@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget {
         '/register_screen': (context) => RegisterScreenProject(),
         '/home_page': (context) => HomePageProject(),
         '/login_screen': (context) => LoginScreenProject(),
+        '/bottom_navigasi': (context) => NavBottom(),
       },
       title: 'E-Nventory',
       theme: ThemeData(

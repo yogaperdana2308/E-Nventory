@@ -1,5 +1,7 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:enventory/view/home_page.dart';
+import 'package:enventory/view/listPenjualan_inventory.dart';
+import 'package:enventory/view/listStock.dart';
 import 'package:flutter/material.dart';
 
 class NavBottom extends StatefulWidget {
@@ -11,11 +13,11 @@ class NavBottom extends StatefulWidget {
 
 class _NavBottomState extends State<NavBottom> {
   @override
-  int _selectedIndex = 0;
-  static const List<Widget> _widgetOptions = [
+  int _selectedIndex = 1;
+  static final List<Widget> _widgetOptions = [
     HomePageProject(),
-    Center(child: Text("Home")),
-    Center(child: Text("Home")),
+    ListpenjualanInventory(),
+    ListStock(),
     Center(child: Text("Home")),
   ];
   @override
@@ -32,7 +34,7 @@ class _NavBottomState extends State<NavBottom> {
             color: Color(0xffB87C4C),
             size: 24,
           ),
-          Icon(Icons.inventory_2_sharp, color: Color(0xffB87C4C), size: 24),
+          Icon(Icons.food_bank_outlined, color: Color(0xffB87C4C), size: 24),
           Icon(Icons.settings_outlined, color: Color(0xffB87C4C), size: 24),
         ],
         onTap: (index) {
