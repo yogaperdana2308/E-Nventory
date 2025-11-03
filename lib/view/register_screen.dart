@@ -1,3 +1,5 @@
+import 'package:enventory/Database/db_helper.dart';
+import 'package:enventory/model/user_model.dart';
 import 'package:enventory/view/login_screen.dart';
 import 'package:enventory/widget/loginButton.dart';
 import 'package:flutter/material.dart';
@@ -11,12 +13,11 @@ class RegisterScreenProject extends StatefulWidget {
 }
 
 class _RegisterScreenProjectState extends State<RegisterScreenProject> {
-  final TextEditingController emailC = TextEditingController();
   final TextEditingController usernameC = TextEditingController();
-  final TextEditingController passwordC = TextEditingController();
   final TextEditingController nomorhpC = TextEditingController();
-  final TextEditingController priceC = TextEditingController();
-  final TextEditingController barangC = TextEditingController();
+  final TextEditingController emailC = TextEditingController();
+  final TextEditingController passwordC = TextEditingController();
+
   bool isVisibility = false;
   @override
   Widget build(BuildContext context) {
@@ -138,13 +139,13 @@ class _RegisterScreenProjectState extends State<RegisterScreenProject> {
                           onPress: () {
                             if (_formKey.currentState!.validate()) {
                               print(emailC.text);
-                              //   final UserModel data = UserModel(
-                              //     email: emailC.text,
-                              //     username: usernameC.text,
-                              //     password: passwordC.text,
-                              //     nomorhp: nomorhpC.text,
-                              //   );
-                              //       // DbHelper.registerUser(data);
+                              final UserModel data = UserModel(
+                                email: emailC.text,
+                                username: usernameC.text,
+                                password: passwordC.text,
+                                nomorhp: int.parse(nomorhpC.text),
+                              );
+                              DbHelper.registerUser(data);
                               Fluttertoast.showToast(msg: "Register Berhasil");
                               Navigator.pushNamed(context, '/login_screen');
                               //     } else {}

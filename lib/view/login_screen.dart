@@ -1,3 +1,4 @@
+import 'package:enventory/Database/db_helper.dart';
 import 'package:enventory/widget/loginAkun.dart';
 import 'package:enventory/widget/loginButton.dart';
 import 'package:flutter/material.dart';
@@ -11,43 +12,40 @@ class LoginScreenProject extends StatefulWidget {
 
 class _LoginScreenProjectState extends State<LoginScreenProject> {
   bool box = false;
-  final WinterInterFont = 'Inter';
   bool obscurePass = true;
+
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController emailC = TextEditingController();
+  final TextEditingController passwordC = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff6D94C5),
+      backgroundColor: const Color(0xff6D94C5),
       body: SingleChildScrollView(
-        physics: NeverScrollableScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.only(top: 56),
           child: Center(
             child: Column(
-              // spacing: 12,
               children: [
                 Image.asset(
                   'assets/images/LogoProject.png',
                   height: 120,
                   width: 120,
                 ),
-                Text(
+                const Text(
                   'e-Nventory',
                   style: TextStyle(
                     fontSize: 20,
                     color: Colors.white,
                     fontFamily: 'Inter',
-                    // fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-
-                  children: [
-                    Icon(
-                      Icons.shopping_bag_outlined,
-                      color: const Color.fromARGB(255, 255, 255, 255),
-                    ),
+                  children: const [
+                    Icon(Icons.shopping_bag_outlined, color: Colors.white),
                     SizedBox(width: 4),
                     Text(
                       'Make Your Inventory Smartly',
@@ -59,81 +57,100 @@ class _LoginScreenProjectState extends State<LoginScreenProject> {
                     ),
                   ],
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
+
+                // ✅ Form login
                 Container(
                   height: 500,
                   width: 340,
                   decoration: BoxDecoration(
-                    color: Color(0xffF5EFE6),
+                    color: const Color(0xffF5EFE6),
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color.fromARGB(
-                          255,
-                          109,
-                          109,
-                          109,
-                        ).withOpacity(0.6),
+                        color: Colors.grey.withOpacity(0.6),
                         spreadRadius: 3,
                         blurRadius: 20,
-                        // offset: Offset(3, 1),
                       ),
                     ],
-
-                    // gradient: LinearGradient(
-                    //   begin: Alignment.topCenter,
-                    //   end: Alignment.bottomCenter,
-                    //   colors: [Colors.red, Colors.black, Colors.blue],
-                    // ),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      spacing: 4,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 16),
-                        Text(
-                          'Welcome Back',
-                          style: TextStyle(fontSize: 24, color: Colors.black),
-                        ),
-                        Text('Sign in to continue'),
+                    child: Form(
+                      key: _formKey, // <-- Tambahkan form key
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Welcome Back',
+                            style: TextStyle(fontSize: 24, color: Colors.black),
+                          ),
+                          const Text('Sign in to continue'),
+                          const SizedBox(height: 12),
 
-                        SizedBox(height: 12),
-                        Text(
-                          'Email',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        loginAkun(
-                          input: 'your.email@.gmail.com',
-                          icon: Icons.email_outlined,
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Password',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        loginAkun(
-                          icon: Icons.lock_outline,
-                          isPassword: true,
-                          input: 'Enter your password',
-                          lambang: Icon(Icons.visibility_off_rounded, size: 16),
-                          obscurePass: obscurePass,
-                          whenPress: () {
-                            setState(() {
-                              obscurePass = !obscurePass;
-                            });
-                          },
-                        ),
-                        // width: 100,
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              child: IconButton(
+                          const Text(
+                            'Email',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+
+                          loginAkun(
+                            controller: emailC,
+                            input: 'your.email@gmail.com',
+                            icon: Icons.email_outlined,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Email tidak boleh kosong';
+                              }
+                              final emailRegex = RegExp(
+                                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                              );
+                              if (!emailRegex.hasMatch(value)) {
+                                return 'Format email tidak valid';
+                              }
+                              return null;
+                            },
+                          ),
+
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Password',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+
+                          loginAkun(
+                            controller: passwordC,
+                            icon: Icons.lock_outline,
+                            isPassword: true,
+                            input: 'Enter your password',
+                            lambang: const Icon(
+                              Icons.visibility_off_rounded,
+                              size: 16,
+                            ),
+                            obscurePass: obscurePass,
+                            whenPress: () {
+                              setState(() {
+                                obscurePass = !obscurePass;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Password tidak boleh kosong';
+                              }
+                              if (value.length < 6) {
+                                return 'Password minimal 6 karakter';
+                              }
+                              return null;
+                            },
+                          ),
+
+                          Row(
+                            children: [
+                              IconButton(
                                 onPressed: () {
-                                  box = !box;
-                                  setState(() {});
+                                  setState(() {
+                                    box = !box;
+                                  });
                                 },
                                 icon: Row(
                                   children: [
@@ -143,75 +160,75 @@ class _LoginScreenProjectState extends State<LoginScreenProject> {
                                           ? Icons.check_box_rounded
                                           : Icons.check_box_outline_blank,
                                     ),
-                                    Text(
+                                    const Text(
                                       'Remember me',
                                       style: TextStyle(fontSize: 12),
                                     ),
                                   ],
                                 ),
                               ),
-                            ),
-                            Spacer(),
-                            TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                'Forgot Password ?',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF4D81E7),
+                              const Spacer(),
+                              TextButton(
+                                onPressed: () {},
+                                child: const Text(
+                                  'Forgot Password ?',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF4D81E7),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
 
-                        LoginButton(
-                          onPress: () {
-                            Navigator.pushNamed(context, '/home_page.dart');
-                          },
-                          label: 'Login',
-                          isLogin: true,
-                        ),
-                        // LoginButton(
-                        //   onPress: () {
-                        //     Navigator.pushNamed(
-                        //       context,
-                        //       'bottom_navigasi.dart',
-                        //     );
-                        //   },
-                        //   label: 'Continue as a guest',
-                        //   isLogin: false,
-                        // ),
-                        SizedBox(height: 24),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Dont have an account?',
-                              style: TextStyle(
-                                color: const Color.fromARGB(255, 0, 0, 0),
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  '/register_screen',
+                          LoginButton(
+                            onPress: () async {
+                              if (_formKey.currentState!.validate()) {
+                                final data = await DbHelper.loginUser(
+                                  email: emailC.text,
+                                  password: passwordC.text,
                                 );
-                              },
-                              child: Text(
-                                'Sign Up',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                  color: Color(0xFF4D81E7),
+                                if (data != null) {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/bottom_navigasi',
+                                  );
+                                }
+                              }
+                            },
+                            label: 'Login',
+                            isLogin: true,
+                          ),
+
+                          const SizedBox(height: 24),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'Don’t have an account?',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/register_screen',
+                                  );
+                                },
+                                child: const Text(
+                                  'Sign Up',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                    color: Color(0xFF4D81E7),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

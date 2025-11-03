@@ -4,6 +4,7 @@ import 'package:enventory/widget/homePage.dart';
 import 'package:enventory/widget/inventoryItem.dart';
 import 'package:enventory/widget/tambahJualButton.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class HomePageProject extends StatefulWidget {
   const HomePageProject({super.key});
@@ -60,7 +61,7 @@ class _HomePageProjectState extends State<HomePageProject> {
                       // Bagian kiri (teks sapaan dan tanggal)
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text(
                             "Hello, Yoga! 👋",
                             style: TextStyle(
@@ -71,12 +72,15 @@ class _HomePageProjectState extends State<HomePageProject> {
                           ),
                           SizedBox(height: 8),
                           Text(
-                            "Jumat, 31 Oktober 2025",
                             style: TextStyle(
-                              color: Color.fromARGB(179, 255, 255, 255),
+                              color: Colors.white,
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
+                            DateFormat(
+                              'EEEE, dd MMMM yyyy',
+                              "id_ID",
+                            ).format(selectedPicked!),
                           ),
                         ],
                       ),

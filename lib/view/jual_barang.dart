@@ -9,11 +9,13 @@ class JualBarang extends StatefulWidget {
 }
 
 class _JualBarangState extends State<JualBarang> {
+  bool initialValue = false;
   String? selectedItem;
   final TextEditingController qtyController = TextEditingController(text: '0');
   final TextEditingController priceController = TextEditingController(
     text: '0',
   );
+
   double totalPrice = 0;
 
   final List<String> items = [
@@ -89,7 +91,7 @@ class _JualBarangState extends State<JualBarang> {
                   borderSide: BorderSide.none,
                 ),
               ),
-              initialValue: selectedItem,
+              value: selectedItem,
               onChanged: (value) => setState(() => selectedItem = value),
               items: items.map((item) {
                 return DropdownMenuItem(value: item, child: Text(item));

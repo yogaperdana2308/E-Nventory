@@ -9,6 +9,8 @@ class loginAkun extends StatelessWidget {
     this.lambang,
     this.isPassword = false,
     required this.icon,
+    this.validator,
+    this.controller,
   });
   final String input;
   final bool obscurePass;
@@ -16,12 +18,14 @@ class loginAkun extends StatelessWidget {
   final Widget? lambang;
   final bool isPassword;
   final IconData icon;
+  final String? Function(String?)? validator;
+  final TextEditingController? controller;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       obscureText: obscurePass,
-
+      controller: controller,
       decoration: InputDecoration(
         prefixIcon: Icon(icon, size: 20),
         fillColor: const Color.fromARGB(255, 255, 255, 255),
@@ -38,6 +42,7 @@ class loginAkun extends StatelessWidget {
               )
             : null,
       ),
+      validator: validator,
     );
   }
 }
