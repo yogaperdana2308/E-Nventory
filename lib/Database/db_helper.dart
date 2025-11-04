@@ -1,4 +1,5 @@
 import 'package:enventory/model/item_model.dart';
+import 'package:enventory/model/penjualan_model.dart';
 import 'package:enventory/model/user_model.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -6,6 +7,7 @@ import 'package:sqflite/sqflite.dart';
 class DbHelper {
   static const tableUser = 'users';
   static const tableItem = 'items';
+  static const tableSales = 'sales';
 
   static Future<Database> db() async {
     final dbPath = await getDatabasesPath();
@@ -17,6 +19,9 @@ class DbHelper {
         );
         await db.execute(
           "CREATE TABLE $tableItem(id INTEGER PRIMARY KEY AUTOINCREMENT,  name TEXT, stock INTEGER, price INTEGER)",
+        );
+        await db.execute(
+          "CREATE TABLE $tableSales(id INTEGER PRIMARY KEY AUTOINCREMENT,  item_id INTEGER, quantity INTEGER, price INTEGER)",
         );
       },
       version: 1,
@@ -96,5 +101,42 @@ class DbHelper {
     final dbs = await db();
     //Insert adalah fungsi untuk menambahkan data (CREATE)
     await dbs.delete(tableItem, where: "id = ?", whereArgs: [id]);
+  }
+
+  static Future<List<SalesModel>> getAllSales() async {
+    final dbs = await db();
+    final List<Map<String, dynamic>> results = await dbs.query(tableSales);
+    print(results.map((e) => SalesModel.fromMap(e)).toList());
+    return results.map((e) => SalesModel.fromMap(e)).toList();
+  }
+
+  static Future<void> deleteSales(int id) async {
+    final dbs = await db();
+    //Insert adalah fungsi untuk menambahkan data (CREATE)
+    await dbs.delete(tableSales, where: "id = ?", whereArgs: [id]);
+  }
+
+  static Future<void> updateSales(ItemModel sales) async {
+    final dbs = await db();
+    //Insert adalah fungsi untuk menambahkan data (CREATE)
+    await dbs.update(
+      tableSales,
+      sales.toMap(),
+      where: "id = ?",
+      whereArgs: [sales.id],
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    print(sales.toMap());
+  }
+
+  static Future<void> createSales(SalesModel sales) async {
+    final dbs = await db();
+    //Insert adalah fungsi untuk menambahkan data (CREATE)
+    await dbs.insert(
+      tableSales,
+      sales.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    print(sales.toMap());
   }
 }

@@ -1,7 +1,44 @@
+import 'package:enventory/Database/db_helper.dart';
+import 'package:enventory/model/user_model.dart';
+import 'package:enventory/view/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  UserModel? user;
+
+  @override
+  void initState() {
+    super.initState();
+    getData(); // ambil data user saat halaman pertama kali dibuka
+  }
+
+  Future<void> getData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('email');
+
+    if (email != null) {
+      final db = await DbHelper.db();
+      final result = await db.query(
+        DbHelper.tableUser,
+        where: 'email = ?',
+        whereArgs: [email],
+      );
+
+      if (result.isNotEmpty) {
+        setState(() {
+          user = UserModel.fromMap(result.first);
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,9 +107,9 @@ class SettingsPage extends StatelessWidget {
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text(
-                            "Yoga Perdana",
+                            user == null ? 'Loading...' : user!.username,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -80,7 +117,7 @@ class SettingsPage extends StatelessWidget {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            "yoga.pratama@email.com",
+                            user == null ? 'Loading...' : user!.email,
                             style: TextStyle(
                               color: Colors.black54,
                               fontSize: 14,
@@ -120,7 +157,7 @@ class SettingsPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              _logoutButton(),
+              _logoutButton(context),
 
               const SizedBox(height: 108),
 
@@ -180,7 +217,7 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  Widget _logoutButton() {
+  Widget _logoutButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
@@ -192,7 +229,11 @@ class SettingsPage extends StatelessWidget {
           ),
         ),
         onPressed: () {
-          // TODO: Tambahkan logika logout di sini
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => LoginScreenProject()),
+            (Route<dynamic> route) => false,
+          );
         },
         icon: const Icon(Icons.logout_rounded, color: Colors.white),
         label: const Text(

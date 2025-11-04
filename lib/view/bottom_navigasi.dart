@@ -27,16 +27,17 @@ class _NavBottomState extends State<NavBottom> {
       body: _widgetOptions[_selectedIndex],
 
       bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Color(0xffB87C4C),
+        animationCurve: Easing.legacyDecelerate,
+        backgroundColor: Color(0xFF00BCD4).withOpacity(0.04),
         items: <Widget>[
-          Icon(Icons.home_outlined, color: Color(0xffB87C4C), size: 24),
+          Icon(Icons.home_outlined, color: Color(0xFF00BCD4), size: 24),
           Icon(
             Icons.shopping_cart_outlined,
-            color: Color(0xffB87C4C),
+            color: Color(0xFF00BCD4),
             size: 24,
           ),
-          Icon(Icons.list_alt_outlined, color: Color(0xffB87C4C), size: 24),
-          Icon(Icons.settings_outlined, color: Color(0xffB87C4C), size: 24),
+          Icon(Icons.outbox_outlined, color: Color(0xFF00BCD4), size: 24),
+          Icon(Icons.settings_outlined, color: Color(0xFF00BCD4), size: 24),
         ],
         onTap: (index) {
           print(index);
