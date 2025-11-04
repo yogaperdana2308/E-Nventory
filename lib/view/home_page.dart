@@ -1,3 +1,5 @@
+import 'package:enventory/Database/db_helper.dart';
+import 'package:enventory/model/user_model.dart';
 import 'package:enventory/view/input_barang.dart';
 import 'package:enventory/view/jual_barang.dart';
 import 'package:enventory/widget/homePage.dart';
@@ -5,6 +7,7 @@ import 'package:enventory/widget/inventoryItem.dart';
 import 'package:enventory/widget/tambahJualButton.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePageProject extends StatefulWidget {
   const HomePageProject({super.key});
@@ -15,11 +18,37 @@ class HomePageProject extends StatefulWidget {
 
 class _HomePageProjectState extends State<HomePageProject> {
   DateTime? selectedPicked = DateTime.now();
+  UserModel? user;
+  @override
+  void initState() {
+    super.initState();
+    getData(); // ambil data user saat halaman pertama kali dibuka
+  }
+
+  Future<void> getData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('email');
+
+    if (email != null) {
+      final db = await DbHelper.db();
+      final result = await db.query(
+        DbHelper.tableUser,
+        where: 'email = ?',
+        whereArgs: [email],
+      );
+
+      if (result.isNotEmpty) {
+        setState(() {
+          user = UserModel.fromMap(result.first);
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffF5EFE6),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
         child: Padding(
@@ -63,10 +92,10 @@ class _HomePageProjectState extends State<HomePageProject> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Hello, Yoga! 👋",
+                            user == null ? 'Loading...' : user!.username,
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 24,
+                              fontSize: 19,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -84,7 +113,7 @@ class _HomePageProjectState extends State<HomePageProject> {
                           ),
                         ],
                       ),
-                      const Spacer(),
+                      Spacer(),
                       // Tombol search
                       Container(
                         height: 36,

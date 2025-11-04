@@ -2,6 +2,7 @@ import 'package:enventory/Database/db_helper.dart';
 import 'package:enventory/widget/loginAkun.dart';
 import 'package:enventory/widget/loginButton.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreenProject extends StatefulWidget {
   const LoginScreenProject({super.key});
@@ -17,6 +18,10 @@ class _LoginScreenProjectState extends State<LoginScreenProject> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailC = TextEditingController();
   final TextEditingController passwordC = TextEditingController();
+  Future<void> saveUserSession(String email) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('email', email);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -190,6 +195,7 @@ class _LoginScreenProjectState extends State<LoginScreenProject> {
                                   password: passwordC.text,
                                 );
                                 if (data != null) {
+                                  await saveUserSession(emailC.text);
                                   Navigator.pushNamed(
                                     context,
                                     '/bottom_navigasi',

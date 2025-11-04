@@ -1,3 +1,6 @@
+import 'package:enventory/Database/db_helper.dart';
+import 'package:enventory/model/item_model.dart';
+import 'package:enventory/model/penjualan_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Untuk format Rupiah
 
@@ -10,7 +13,7 @@ class JualBarang extends StatefulWidget {
 
 class _JualBarangState extends State<JualBarang> {
   bool initialValue = false;
-  String? selectedItem;
+  // String? selectedItem;
   final TextEditingController qtyController = TextEditingController(text: '0');
   final TextEditingController priceController = TextEditingController(
     text: '0',
@@ -18,13 +21,8 @@ class _JualBarangState extends State<JualBarang> {
 
   double totalPrice = 0;
 
-  final List<String> items = [
-    'Minyak Goreng',
-    'Beras',
-    'Gula',
-    'Air Mineral',
-    'Snack',
-  ];
+  List<ItemModel>? items;
+  ItemModel? selectedItem;
 
   final currencyFormat = NumberFormat.currency(
     // locale: 'id_ID',
@@ -45,6 +43,7 @@ class _JualBarangState extends State<JualBarang> {
     super.initState();
     qtyController.addListener(calculateTotal);
     priceController.addListener(calculateTotal);
+    getData();
   }
 
   @override
@@ -52,6 +51,11 @@ class _JualBarangState extends State<JualBarang> {
     qtyController.dispose();
     priceController.dispose();
     super.dispose();
+  }
+
+  getData() async {
+    items = await DbHelper.getAllItem();
+    setState(() {});
   }
 
   @override
@@ -81,7 +85,7 @@ class _JualBarangState extends State<JualBarang> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
-            DropdownButtonFormField<String>(
+            DropdownButtonFormField<ItemModel>(
               decoration: InputDecoration(
                 hintText: 'Pilih barang yang dijual',
                 filled: true,
@@ -91,13 +95,20 @@ class _JualBarangState extends State<JualBarang> {
                   borderSide: BorderSide.none,
                 ),
               ),
+
               value: selectedItem,
-              onChanged: (value) => setState(() => selectedItem = value),
-              items: items.map((item) {
-                return DropdownMenuItem(value: item, child: Text(item));
+              onChanged: (value) {
+                setState(() {
+                  selectedItem = value;
+                  priceController.text = value?.price.toString() ?? '0';
+                });
+              },
+              items: items?.map((item) {
+                return DropdownMenuItem(value: item, child: Text(item.name));
               }).toList(),
             ),
-            const SizedBox(height: 16),
+
+            SizedBox(height: 16),
 
             // Jumlah Terjual
             const Text(
@@ -199,8 +210,10 @@ class _JualBarangState extends State<JualBarang> {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
-                    onPressed: () {
-                      if (selectedItem == null || totalPrice <= 0) {
+                    onPressed: () async {
+                      if (selectedItem == null ||
+                          totalPrice <= 0 ||
+                          qtyController.text.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Isi semua data dengan benar!'),
@@ -208,16 +221,54 @@ class _JualBarangState extends State<JualBarang> {
                         );
                         return;
                       }
+                      final qty = int.tryParse(qtyController.text) ?? 0;
 
-                      // TODO: Simpan transaksi ke database
+                      if (qty <= 0) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Jumlah terjual harus lebih dari 0!'),
+                          ),
+                        );
+                        return;
+                      }
+                      // Kurangi stok barang
+                      final newStock = selectedItem!.stock - qty;
+                      if (newStock < 0) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Stok tidak mencukupi!'),
+                          ),
+                        );
+                        return;
+                      }
+                      final updatedItem = ItemModel(
+                        id: selectedItem!.id,
+                        name: selectedItem!.name,
+                        price: selectedItem!.price,
+                        stock: newStock,
+                      );
+                      final CreateSales = SalesModel(
+                        name: selectedItem!.name,
+                        quantity: int.parse(qtyController.text),
+                        price: selectedItem!.price,
+                      );
+                      await DbHelper.updateItem(updatedItem);
+                      await DbHelper.createSales(CreateSales);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Transaksi berhasil disimpan!'),
                         ),
                       );
-                      Navigator.pop(context);
+
+                      Navigator.pop(
+                        context,
+                        true,
+                      ); // kirim sinyal ke halaman sebelumnya
                     },
-                    child: const Text("Simpan"),
+                    child: Text(
+                      'Simpan',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ],

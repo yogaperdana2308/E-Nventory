@@ -190,7 +190,7 @@ class _ListStockState extends State<ListStock> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Inventory List',
+                      'Stock List',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 22,

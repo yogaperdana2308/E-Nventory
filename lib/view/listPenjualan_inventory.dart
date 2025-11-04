@@ -9,20 +9,20 @@ class ListpenjualanInventory extends StatefulWidget {
 
 class _ListpenjualanInventoryState extends State<ListpenjualanInventory> {
   final List<SalesDay> allSalesData = [
-    SalesDay(
-      date: 'Senin, 27 Oktober 2025',
-      items: [
-        SalesItem(name: 'Minyak Goreng', price: 32000, qty: 5),
-        SalesItem(name: 'Gula Pasir 1kg', price: 14000, qty: 8),
-      ],
-    ),
-    SalesDay(
-      date: 'Minggu, 26 Oktober 2025',
-      items: [
-        SalesItem(name: 'Beras 5kg', price: 70000, qty: 3),
-        SalesItem(name: 'Indomie Goreng', price: 3000, qty: 12),
-      ],
-    ),
+    // SalesDay(
+    //   date: 'Senin, 27 Oktober 2025',
+    //   items: [
+    //     SalesItem(name: 'Minyak Goreng', price: 32000, qty: 5),
+    //     SalesItem(name: 'Gula Pasir 1kg', price: 14000, qty: 8),
+    //   ],
+    // ),
+    // SalesDay(
+    //   date: 'Minggu, 26 Oktober 2025',
+    //   items: [
+    //     SalesItem(name: 'Beras 5kg', price: 70000, qty: 3),
+    //     SalesItem(name: 'Indomie Goreng', price: 3000, qty: 12),
+    //   ],
+    // ),
   ];
 
   List<SalesDay> filteredData = [];
@@ -227,7 +227,7 @@ class _ListpenjualanInventoryState extends State<ListpenjualanInventory> {
                     SizedBox(height: 4),
                     Text(
                       'Track your transactions',
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                      style: TextStyle(color: Colors.white, fontSize: 14),
                     ),
                   ],
                 ),
