@@ -72,7 +72,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     SizedBox(height: 4),
                     Text(
                       "Manage your preferences",
-                      style: TextStyle(color: Colors.white70),
+                      style: TextStyle(color: Colors.white),
                     ),
                   ],
                 ),
@@ -195,6 +195,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
+
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),

@@ -247,8 +247,9 @@ class _JualBarangState extends State<JualBarang> {
                         price: selectedItem!.price,
                         stock: newStock,
                       );
+
                       final CreateSales = SalesModel(
-                        name: selectedItem!.name,
+                        itemId: selectedItem!.id!,
                         quantity: int.parse(qtyController.text),
                         price: selectedItem!.price,
                       );

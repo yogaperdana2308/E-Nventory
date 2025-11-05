@@ -1,3 +1,5 @@
+import 'package:enventory/Database/db_helper.dart';
+import 'package:enventory/model/item_model.dart';
 import 'package:flutter/material.dart';
 
 class ListpenjualanInventory extends StatefulWidget {
@@ -8,22 +10,7 @@ class ListpenjualanInventory extends StatefulWidget {
 }
 
 class _ListpenjualanInventoryState extends State<ListpenjualanInventory> {
-  final List<SalesDay> allSalesData = [
-    // SalesDay(
-    //   date: 'Senin, 27 Oktober 2025',
-    //   items: [
-    //     SalesItem(name: 'Minyak Goreng', price: 32000, qty: 5),
-    //     SalesItem(name: 'Gula Pasir 1kg', price: 14000, qty: 8),
-    //   ],
-    // ),
-    // SalesDay(
-    //   date: 'Minggu, 26 Oktober 2025',
-    //   items: [
-    //     SalesItem(name: 'Beras 5kg', price: 70000, qty: 3),
-    //     SalesItem(name: 'Indomie Goreng', price: 3000, qty: 12),
-    //   ],
-    // ),
-  ];
+  List<SalesDay> allSalesData = [];
 
   List<SalesDay> filteredData = [];
   DateTime? selectedDate;
@@ -37,6 +24,49 @@ class _ListpenjualanInventoryState extends State<ListpenjualanInventory> {
     super.initState();
     filteredData = allSalesData;
     _calculateSummary();
+    _loadSalesData();
+  }
+
+  Future<void> _loadSalesData() async {
+    // Ambil semua data penjualan dan item
+    final salesList = await DbHelper.getAllSales();
+    final itemList = await DbHelper.getAllItem();
+
+    // Gabungkan sales dengan detail item berdasarkan item_id
+    Map<String, List<SalesItem>> groupedSales = {};
+
+    for (var sale in salesList) {
+      // Cari item yang sesuai dengan item_id di tabel sales
+      final item = itemList.firstWhere(
+        (i) => i.id == sale.itemId,
+        orElse: () => ItemModel(id: 0, name: 'Unknown', stock: 0, price: 0),
+      );
+
+      // Format tanggal (sementara pakai tanggal hari ini, bisa diganti kalau ada field tanggal di DB)
+      final now = DateTime.now();
+      String formattedDate = _formatDate(now);
+
+      groupedSales.putIfAbsent(formattedDate, () => []);
+
+      groupedSales[formattedDate]!.add(
+        SalesItem(
+          name: item.name, // ✅ tampilkan nama item dari tabel item
+          price: sale.price, // total harga per transaksi
+          qty: sale.quantity, // jumlah yang dijual
+        ),
+      );
+    }
+
+    // Ubah ke dalam bentuk List<SalesDay> agar bisa dipakai di UI
+    final List<SalesDay> data = groupedSales.entries
+        .map((e) => SalesDay(date: e.key, items: e.value))
+        .toList();
+
+    setState(() {
+      allSalesData = data;
+      filteredData = data;
+      _calculateSummary();
+    });
   }
 
   // ======================
@@ -282,7 +312,6 @@ class _ListpenjualanInventoryState extends State<ListpenjualanInventory> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Filter aktif: '
                       '${selectedDate != null ? _formatDate(selectedDate!) : ''} '
                       '${selectedItem ?? ''}',
                       style: const TextStyle(

@@ -1,33 +1,38 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class SalesModel {
   int? id;
-  String name;
+  int itemId;
   int quantity;
   int price;
+  int? sales;
 
   SalesModel({
     this.id,
-    required this.name,
+    required this.itemId,
     required this.quantity,
     required this.price,
+    this.sales,
   });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      'name': name,
+      'item_id': itemId,
       'quantity': quantity,
       'price': price,
+      'sales': sales,
     };
   }
 
   factory SalesModel.fromMap(Map<String, dynamic> map) {
     return SalesModel(
-      id: map['id'] as int,
-      name: map['name'] as String,
+      id: map['id'] != null ? map['id'] as int : null,
+      itemId: map['item_id'] as int,
       quantity: map['quantity'] as int,
       price: map['price'] as int,
+      sales: map['sales'] != null ? map['sales'] as int : null,
     );
   }
 
