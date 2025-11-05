@@ -27,166 +27,171 @@ class _RegisterScreenProjectState extends State<RegisterScreenProject> {
   final _formKey = GlobalKey<FormState>();
   SafeArea buildLayer() {
     return SafeArea(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(
-            child: Container(
-              height: 650,
-              width: 360,
-              decoration: BoxDecoration(
-                color: Color(0xffF5EFE6).withOpacity(0.9),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color.fromARGB(
-                      255,
-                      109,
-                      109,
-                      109,
-                    ).withOpacity(0.8),
-                    spreadRadius: 6,
-                    blurRadius: 10,
-                    // offset: Offset(3, 1),
-                  ),
-                ],
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Form(
-                key: _formKey,
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Welcome",
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
+      child: SingleChildScrollView(
+        physics: NeverScrollableScrollPhysics(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Center(
+              child: Container(
+                height: 650,
+                width: 360,
+                decoration: BoxDecoration(
+                  color: Color(0xffF5EFE6).withOpacity(0.9),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color.fromARGB(
+                        255,
+                        109,
+                        109,
+                        109,
+                      ).withOpacity(0.8),
+                      spreadRadius: 6,
+                      blurRadius: 10,
+                      // offset: Offset(3, 1),
+                    ),
+                  ],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Welcome",
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        height(12),
-                        Text("Register to access your account"),
-                        height(24),
-                        buildTitle("Username"),
-                        height(12),
-                        buildTextField(
-                          hintText: "Enter your username",
-                          controller: usernameC,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Username tidak boleh kosong";
-                            }
-                            return null;
-                          },
-                        ),
+                          height(12),
+                          Text("Register to access your account"),
+                          height(24),
+                          buildTitle("Username"),
+                          height(12),
+                          buildTextField(
+                            hintText: "Enter your username",
+                            controller: usernameC,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Username tidak boleh kosong";
+                              }
+                              return null;
+                            },
+                          ),
 
-                        buildTitle("No. HP"),
-                        height(12),
-                        buildTextField(
-                          hintText: "No. HP",
-                          controller: nomorhpC,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "No. HP tidak boleh kosong";
-                            } else if (value.length < 6) {
-                              return "No. HP minimal 6 karakter";
-                            }
-                            return null;
-                          },
-                        ),
+                          buildTitle("No. HP"),
+                          height(12),
+                          buildTextField(
+                            hintText: "No. HP",
+                            controller: nomorhpC,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "No. HP tidak boleh kosong";
+                              } else if (value.length < 6) {
+                                return "No. HP minimal 6 karakter";
+                              }
+                              return null;
+                            },
+                          ),
 
-                        buildTitle("Email Address"),
-                        height(12),
-                        buildTextField(
-                          hintText: "Enter your email",
-                          controller: emailC,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Email tidak boleh kosong";
-                            } else if (!value.contains('@')) {
-                              return "Email tidak valid";
-                            } else if (!RegExp(
-                              r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$",
-                            ).hasMatch(value)) {
-                              return "Format Email tidak valid";
-                            }
-                            return null;
-                          },
-                        ),
+                          buildTitle("Email Address"),
+                          height(12),
+                          buildTextField(
+                            hintText: "Enter your email",
+                            controller: emailC,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Email tidak boleh kosong";
+                              } else if (!value.contains('@')) {
+                                return "Email tidak valid";
+                              } else if (!RegExp(
+                                r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$",
+                              ).hasMatch(value)) {
+                                return "Format Email tidak valid";
+                              }
+                              return null;
+                            },
+                          ),
 
-                        buildTitle("Password"),
-                        height(12),
-                        buildTextField(
-                          hintText: "Enter your password",
-                          isPassword: true,
-                          controller: passwordC,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Password tidak boleh kosong";
-                            } else if (value.length < 6) {
-                              return "Password minimal 6 karakter";
-                            }
-                            return null;
-                          },
-                        ),
+                          buildTitle("Password"),
+                          height(12),
+                          buildTextField(
+                            hintText: "Enter your password",
+                            isPassword: true,
+                            controller: passwordC,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Password tidak boleh kosong";
+                              } else if (value.length < 6) {
+                                return "Password minimal 6 karakter";
+                              }
+                              return null;
+                            },
+                          ),
 
-                        height(24),
-                        LoginButton(
-                          isLogin: true,
-                          label: "Register",
-                          onPress: () {
-                            if (_formKey.currentState!.validate()) {
-                              print(emailC.text);
-                              final UserModel data = UserModel(
-                                email: emailC.text,
-                                username: usernameC.text,
-                                password: passwordC.text,
-                                nomorhp: int.parse(nomorhpC.text),
-                              );
-                              DbHelper.registerUser(data);
-                              Fluttertoast.showToast(msg: "Register Berhasil");
-                              Navigator.pushNamed(context, '/login_screen');
-                              //     } else {}
-                            }
-                          },
-                        ),
-                        height(16),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text("Have an account?"),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return LoginScreenProject();
-                                    },
-                                  ),
+                          height(24),
+                          LoginButton(
+                            isLogin: true,
+                            label: "Register",
+                            onPress: () {
+                              if (_formKey.currentState!.validate()) {
+                                print(emailC.text);
+                                final UserModel data = UserModel(
+                                  email: emailC.text,
+                                  username: usernameC.text,
+                                  password: passwordC.text,
+                                  nomorhp: int.parse(nomorhpC.text),
                                 );
-                              },
-                              child: Text(
-                                "Sign In",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue,
+                                DbHelper.registerUser(data);
+                                Fluttertoast.showToast(
+                                  msg: "Register Berhasil",
+                                );
+                                Navigator.pushNamed(context, '/login_screen');
+                                //     } else {}
+                              }
+                            },
+                          ),
+                          height(16),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("Have an account?"),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return LoginScreenProject();
+                                      },
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  "Sign In",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
