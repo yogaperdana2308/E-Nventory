@@ -1,8 +1,8 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:enventory/view/home_screen.dart';
-import 'package:enventory/view/listPenjualan_screen.dart';
-import 'package:enventory/view/listStock_screen.dart';
+import 'package:enventory/view/penjualan_screen.dart';
 import 'package:enventory/view/setting_screen.dart';
+import 'package:enventory/view/stock_screen.dart';
 import 'package:flutter/material.dart';
 
 class NavBottom extends StatefulWidget {
@@ -17,7 +17,7 @@ class _NavBottomState extends State<NavBottom> {
   int _selectedIndex = 0;
   static final List<Widget> _widgetOptions = [
     HomePageProject(),
-    ListpenjualanInventory(),
+    ListPenjualanInventory(),
     ListStock(),
     SettingsPage(),
   ];

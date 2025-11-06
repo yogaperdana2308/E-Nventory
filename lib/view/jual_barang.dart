@@ -1,4 +1,4 @@
-import 'package:enventory/Database/db_helper.dart';
+import 'package:enventory/database/db_helper.dart';
 import 'package:enventory/model/item_model.dart';
 import 'package:enventory/model/penjualan_model.dart';
 import 'package:flutter/material.dart';
@@ -257,6 +257,7 @@ class _JualBarangState extends State<JualBarang> {
                       await DbHelper.createSales(CreateSales);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
+                          backgroundColor: Colors.green,
                           content: Text('Transaksi berhasil disimpan!'),
                         ),
                       );

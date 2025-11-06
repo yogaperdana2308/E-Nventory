@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class loginAkun extends StatelessWidget {
-  const loginAkun({
+class LoginAkun extends StatelessWidget {
+  const LoginAkun({
     super.key,
     required this.input,
     this.obscurePass = false,

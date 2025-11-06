@@ -1,7 +1,7 @@
-import 'package:enventory/Database/db_helper.dart';
+import 'package:enventory/database/db_helper.dart';
 import 'package:enventory/model/user_model.dart';
 import 'package:enventory/view/login_screen.dart';
-import 'package:enventory/widget/loginButton.dart';
+import 'package:enventory/widget/login_button.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 

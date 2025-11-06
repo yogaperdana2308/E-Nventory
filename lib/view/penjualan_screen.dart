@@ -1,15 +1,15 @@
-import 'package:enventory/Database/db_helper.dart';
+import 'package:enventory/database/db_helper.dart';
 import 'package:enventory/model/item_model.dart';
 import 'package:flutter/material.dart';
 
-class ListpenjualanInventory extends StatefulWidget {
-  const ListpenjualanInventory({super.key});
+class ListPenjualanInventory extends StatefulWidget {
+  const ListPenjualanInventory({super.key});
 
   @override
-  State<ListpenjualanInventory> createState() => _ListpenjualanInventoryState();
+  State<ListPenjualanInventory> createState() => _ListPenjualanInventoryState();
 }
 
-class _ListpenjualanInventoryState extends State<ListpenjualanInventory> {
+class _ListPenjualanInventoryState extends State<ListPenjualanInventory> {
   List<SalesDay> allSalesData = [];
 
   List<SalesDay> filteredData = [];

@@ -1,4 +1,4 @@
-import 'package:enventory/Database/db_helper.dart';
+import 'package:enventory/database/db_helper.dart';
 import 'package:enventory/model/item_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -164,9 +164,10 @@ class _ListStockState extends State<ListStock> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Colors.cyan.withOpacity(0.6),
         onPressed: () => _showItemDialog(),
-        label: const Text('Tambah Item'),
-        icon: const Icon(Icons.add),
+        label: const Text('Tambah Item', style: TextStyle(color: Colors.white)),
+        icon: const Icon(Icons.add, color: Colors.white),
       ),
       body: SafeArea(
         child: Padding(

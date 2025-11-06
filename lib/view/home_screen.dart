@@ -1,10 +1,10 @@
-import 'package:enventory/Database/db_helper.dart';
+import 'package:enventory/database/db_helper.dart';
 import 'package:enventory/model/user_model.dart';
 import 'package:enventory/view/input_barang.dart';
 import 'package:enventory/view/jual_barang.dart';
-import 'package:enventory/widget/homePage.dart';
-import 'package:enventory/widget/inventoryItem.dart';
-import 'package:enventory/widget/tambahJualButton.dart';
+import 'package:enventory/widget/home_page.dart';
+import 'package:enventory/widget/inventory_item.dart';
+import 'package:enventory/widget/tambahjual_button.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';

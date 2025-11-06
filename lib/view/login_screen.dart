@@ -1,7 +1,7 @@
-import 'package:enventory/Database/db_helper.dart';
+import 'package:enventory/database/db_helper.dart';
 import 'package:enventory/preferences/preferencesHandler.dart';
-import 'package:enventory/widget/loginAkun.dart';
-import 'package:enventory/widget/loginButton.dart';
+import 'package:enventory/widget/login_akun.dart';
+import 'package:enventory/widget/login_button.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -100,7 +100,7 @@ class _LoginScreenProjectState extends State<LoginScreenProject> {
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
 
-                          loginAkun(
+                          LoginAkun(
                             controller: emailC,
                             input: 'your.email@gmail.com',
                             icon: Icons.email_outlined,
@@ -124,7 +124,7 @@ class _LoginScreenProjectState extends State<LoginScreenProject> {
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
 
-                          loginAkun(
+                          LoginAkun(
                             controller: passwordC,
                             icon: Icons.lock_outline,
                             isPassword: true,
