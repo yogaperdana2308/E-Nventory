@@ -261,11 +261,11 @@ class _HomePageProjectState extends State<HomePageProject> {
               SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   tambahJualButton(
                     label: "Tambah Barang",
                     icon: Icons.add,
-                    color: Color(0xFFFF9800), // oranye
+                    color: Colors.teal.withOpacity(0.2), // oranye
                     tujuan: InputItem(),
                   ),
                   SizedBox(width: 16),
