@@ -1,8 +1,8 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:enventory/view/home_page.dart';
-import 'package:enventory/view/listPenjualan_inventory.dart';
-import 'package:enventory/view/listStock.dart';
-import 'package:enventory/view/setting_page.dart';
+import 'package:enventory/view/home_screen.dart';
+import 'package:enventory/view/listPenjualan_screen.dart';
+import 'package:enventory/view/listStock_screen.dart';
+import 'package:enventory/view/setting_screen.dart';
 import 'package:flutter/material.dart';
 
 class NavBottom extends StatefulWidget {

@@ -1,4 +1,5 @@
 import 'package:enventory/Database/db_helper.dart';
+import 'package:enventory/preferences/preferencesHandler.dart';
 import 'package:enventory/widget/loginAkun.dart';
 import 'package:enventory/widget/loginButton.dart';
 import 'package:flutter/material.dart';
@@ -194,8 +195,10 @@ class _LoginScreenProjectState extends State<LoginScreenProject> {
                                   email: emailC.text,
                                   password: passwordC.text,
                                 );
+
                                 if (data != null) {
                                   await saveUserSession(emailC.text);
+                                  PreferenceHandler.saveLogin(true);
                                   Navigator.pushNamed(
                                     context,
                                     '/bottom_navigasi',

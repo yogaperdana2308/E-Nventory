@@ -1,5 +1,6 @@
 import 'package:enventory/Database/db_helper.dart';
 import 'package:enventory/model/user_model.dart';
+import 'package:enventory/preferences/preferencesHandler.dart';
 import 'package:enventory/view/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -230,6 +231,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ),
         onPressed: () {
+          PreferenceHandler.removeLogin();
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => LoginScreenProject()),
