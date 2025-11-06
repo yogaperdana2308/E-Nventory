@@ -200,6 +200,16 @@ class _LoginScreenProjectState extends State<LoginScreenProject> {
                                     context,
                                     '/bottom_navigasi',
                                   );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Email atau password tidak sesuai',
+                                      ),
+                                      backgroundColor: Colors.red,
+                                      duration: Duration(seconds: 2),
+                                    ),
+                                  );
                                 }
                               }
                             },
