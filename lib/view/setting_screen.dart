@@ -56,7 +56,15 @@ class _SettingsPageState extends State<SettingsPage> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF00B8D4),
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color.fromARGB(255, 131, 179, 238),
+                      Color(0xff6D94C5),
+                      Color.fromARGB(255, 103, 148, 204),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(

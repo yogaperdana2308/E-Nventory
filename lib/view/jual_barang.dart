@@ -18,6 +18,22 @@ class _JualBarangState extends State<JualBarang> {
   final TextEditingController priceController = TextEditingController(
     text: '0',
   );
+  final TextEditingController dateControlller = TextEditingController();
+
+  Future<void> selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(), // default: hari ini
+      firstDate: DateTime(2000), // batas awal
+      lastDate: DateTime(2101), // batas akhir
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        dateControlller.text = DateFormat('dd/MM/yyyy').format(pickedDate);
+      });
+    }
+  }
 
   double totalPrice = 0;
 
@@ -84,7 +100,7 @@ class _JualBarangState extends State<JualBarang> {
               "Pilih Barang *",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 6),
+            SizedBox(height: 6),
             DropdownButtonFormField<ItemModel>(
               decoration: InputDecoration(
                 hintText: 'Pilih barang yang dijual',
@@ -108,6 +124,20 @@ class _JualBarangState extends State<JualBarang> {
               }).toList(),
             ),
 
+            TextField(
+              controller: dateControlller,
+              decoration: InputDecoration(
+                // labelText: 'Tanggal',
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.calendar_view_day_outlined),
+                  onPressed: () {
+                    selectDate(context);
+                  },
+                ),
+              ),
+              keyboardType: TextInputType.number,
+            ),
+
             SizedBox(height: 16),
 
             // Jumlah Terjual
@@ -116,6 +146,7 @@ class _JualBarangState extends State<JualBarang> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
+
             TextField(
               controller: qtyController,
               keyboardType: TextInputType.number,

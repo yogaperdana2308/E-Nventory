@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class ItemModel {
@@ -5,12 +6,14 @@ class ItemModel {
   String name;
   int stock;
   int price;
+  String? date;
 
   ItemModel({
     this.id,
     required this.name,
     required this.stock,
     required this.price,
+    this.date,
   });
 
   Map<String, dynamic> toMap() {
@@ -19,15 +22,17 @@ class ItemModel {
       'name': name,
       'stock': stock,
       'price': price,
+      'date': date,
     };
   }
 
   factory ItemModel.fromMap(Map<String, dynamic> map) {
     return ItemModel(
-      id: map['id'] as int,
+      id: map['id'] != null ? map['id'] as int : null,
       name: map['name'] as String,
       stock: map['stock'] as int,
       price: map['price'] as int,
+      date: map['date'] != null ? map['date'] as String : null,
     );
   }
 

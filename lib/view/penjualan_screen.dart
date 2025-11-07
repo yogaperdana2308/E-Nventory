@@ -63,6 +63,8 @@ class _ListPenjualanInventoryState extends State<ListPenjualanInventory> {
         .map((e) => SalesDay(date: e.key, items: e.value))
         .toList();
 
+    print(data);
+
     setState(() {
       allSalesData = data;
       filteredData = data;
@@ -241,12 +243,18 @@ class _ListPenjualanInventoryState extends State<ListPenjualanInventory> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.cyan,
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color.fromARGB(255, 131, 179, 238),
+                      Color(0xff6D94C5),
+                      Color.fromARGB(255, 103, 148, 204),
+                    ],
+                  ),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
                       'Sales Data',
                       style: TextStyle(
@@ -348,7 +356,7 @@ class _ListPenjualanInventoryState extends State<ListPenjualanInventory> {
                           const SizedBox(width: 6),
                           Text(
                             day.date,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 15,
                               color: Colors.black87,

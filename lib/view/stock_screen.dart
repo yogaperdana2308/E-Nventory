@@ -53,6 +53,23 @@ class _ListStockState extends State<ListStock> {
     final priceController = TextEditingController(
       text: existingItem?.price.toString() ?? '',
     );
+    final dateController = TextEditingController(
+      text: existingItem?.date.toString() ?? '',
+    );
+    Future<void> selectDate(BuildContext context) async {
+      final DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(), // default: hari ini
+        firstDate: DateTime(2000), // batas awal
+        lastDate: DateTime(2101), // batas akhir
+      );
+
+      if (pickedDate != null) {
+        setState(() {
+          dateController.text = DateFormat('dd/MM/yyyy').format(pickedDate);
+        });
+      }
+    }
 
     showDialog(
       context: context,
@@ -81,6 +98,19 @@ class _ListStockState extends State<ListStock> {
                 ),
                 keyboardType: TextInputType.number,
               ),
+              TextField(
+                controller: dateController,
+                decoration: InputDecoration(
+                  labelText: 'Tanggal',
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.calendar_view_day_outlined),
+                    onPressed: () {
+                      selectDate(context);
+                    },
+                  ),
+                ),
+                keyboardType: TextInputType.number,
+              ),
             ],
           ),
         ),
@@ -93,7 +123,8 @@ class _ListStockState extends State<ListStock> {
             onPressed: () async {
               if (nameController.text.isEmpty ||
                   stockController.text.isEmpty ||
-                  priceController.text.isEmpty) {
+                  priceController.text.isEmpty ||
+                  dateController.text.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Semua kolom wajib diisi!')),
                 );
@@ -105,7 +136,9 @@ class _ListStockState extends State<ListStock> {
                 name: nameController.text,
                 stock: int.parse(stockController.text),
                 price: int.parse(priceController.text),
+                date: dateController.text,
               );
+              print(newItem);
 
               if (existingItem == null) {
                 await DbHelper.createItem(newItem);
@@ -164,10 +197,10 @@ class _ListStockState extends State<ListStock> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.cyan.withOpacity(0.6),
+        backgroundColor: Colors.blue.withOpacity(0.6),
         onPressed: () => _showItemDialog(),
-        label: const Text('Tambah Item', style: TextStyle(color: Colors.white)),
-        icon: const Icon(Icons.add, color: Colors.white),
+        label: Text('Tambah Item', style: TextStyle(color: Colors.white)),
+        icon: Icon(Icons.add, color: Colors.white),
       ),
       body: SafeArea(
         child: Padding(
@@ -181,7 +214,11 @@ class _ListStockState extends State<ListStock> {
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF00BCD4), Color(0xFF26C6DA)],
+                    colors: [
+                      Color.fromARGB(255, 131, 179, 238),
+                      Color(0xff6D94C5),
+                      Color.fromARGB(255, 103, 148, 204),
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),

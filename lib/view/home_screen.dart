@@ -239,21 +239,6 @@ class _HomePageProjectState extends State<HomePageProject> {
                           ),
                         ],
                       ),
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.attach_money_rounded,
-                            color: Colors.white,
-                            size: 28,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -265,14 +250,14 @@ class _HomePageProjectState extends State<HomePageProject> {
                   tambahJualButton(
                     label: "Tambah Barang",
                     icon: Icons.add,
-                    color: Colors.teal.withOpacity(0.2), // oranye
+                    color: Colors.blue.withOpacity(0.6), // oranye
                     tujuan: InputItem(),
                   ),
                   SizedBox(width: 16),
                   tambahJualButton(
                     label: "Jual Barang",
                     icon: Icons.shopping_cart_outlined,
-                    color: Color(0xFF00BCD4), // biru toska
+                    color: Colors.blue.withOpacity(0.6), // biru toska
                     tujuan: JualBarang(),
                   ),
                 ],

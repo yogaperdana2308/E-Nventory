@@ -7,6 +7,7 @@ class SalesModel {
   int quantity;
   int price;
   int? sales;
+  String? date;
 
   SalesModel({
     this.id,
@@ -14,25 +15,28 @@ class SalesModel {
     required this.quantity,
     required this.price,
     this.sales,
+    this.date,
   });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      'item_id': itemId,
+      'itemId': itemId,
       'quantity': quantity,
       'price': price,
       'sales': sales,
+      'date': date,
     };
   }
 
   factory SalesModel.fromMap(Map<String, dynamic> map) {
     return SalesModel(
       id: map['id'] != null ? map['id'] as int : null,
-      itemId: map['item_id'] as int,
+      itemId: map['itemId'] as int,
       quantity: map['quantity'] as int,
       price: map['price'] as int,
       sales: map['sales'] != null ? map['sales'] as int : null,
+      date: map['date'] != null ? map['date'] as String : null,
     );
   }
 
