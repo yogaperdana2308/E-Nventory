@@ -103,7 +103,7 @@ class _ListStockState extends State<ListStock> {
                 decoration: InputDecoration(
                   labelText: 'Tanggal',
                   suffixIcon: IconButton(
-                    icon: Icon(Icons.calendar_view_day_outlined),
+                    icon: Icon(Icons.calendar_month_outlined, size: 16),
                     onPressed: () {
                       selectDate(context);
                     },

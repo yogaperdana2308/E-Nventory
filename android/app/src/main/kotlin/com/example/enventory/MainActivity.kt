@@ -1,4 +1,4 @@
-package com.example.enventory
+package com.ppkd.enventory
 
 import io.flutter.embedding.android.FlutterActivity
 

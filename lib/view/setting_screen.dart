@@ -135,7 +135,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         ],
                       ),
                     ),
-                    const Icon(
+                    Icon(
                       Icons.arrow_forward_ios_rounded,
                       color: Colors.grey,
                       size: 18,
@@ -146,7 +146,7 @@ class _SettingsPageState extends State<SettingsPage> {
               const SizedBox(height: 16),
 
               // Account section
-              const Text(
+              Text(
                 "Account",
                 style: TextStyle(
                   fontSize: 16,
@@ -154,18 +154,18 @@ class _SettingsPageState extends State<SettingsPage> {
                   color: Colors.black87,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
 
-              _settingsTile(
-                icon: Icons.person_outline_rounded,
-                title: "Edit Profile",
-                trailing: const Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  color: Colors.grey,
-                  size: 18,
-                ),
-              ),
-              const SizedBox(height: 8),
+              // // _settingsTile(
+              // //   icon: Icons.person_outline_rounded,
+              // //   title: "Edit Profile",
+              // //   trailing: const Icon(
+              // //     Icons.arrow_forward_ios_rounded,
+              // //     color: Colors.grey,
+              // //     size: 18,
+              // //   ),
+              // ),
+              SizedBox(height: 8),
               _logoutButton(context),
 
               const SizedBox(height: 108),

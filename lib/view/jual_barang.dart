@@ -123,13 +123,21 @@ class _JualBarangState extends State<JualBarang> {
                 return DropdownMenuItem(value: item, child: Text(item.name));
               }).toList(),
             ),
-
+            SizedBox(height: 12),
+            Text("Tanggal *", style: TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(height: 6),
             TextField(
               controller: dateControlller,
               decoration: InputDecoration(
-                // labelText: 'Tanggal',
+                hintText: 'Tanggal',
+                filled: true,
+                fillColor: Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.calendar_view_day_outlined),
+                  icon: Icon(Icons.calendar_month_outlined),
                   onPressed: () {
                     selectDate(context);
                   },
@@ -141,7 +149,7 @@ class _JualBarangState extends State<JualBarang> {
             SizedBox(height: 16),
 
             // Jumlah Terjual
-            const Text(
+            Text(
               "Jumlah Terjual *",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
@@ -167,7 +175,7 @@ class _JualBarangState extends State<JualBarang> {
               "Harga Satuan *",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 6),
+            SizedBox(height: 6),
             TextField(
               controller: priceController,
               keyboardType: TextInputType.number,
@@ -276,6 +284,7 @@ class _JualBarangState extends State<JualBarang> {
                         id: selectedItem!.id,
                         name: selectedItem!.name,
                         price: selectedItem!.price,
+                        date: selectedItem!.date,
                         stock: newStock,
                       );
 

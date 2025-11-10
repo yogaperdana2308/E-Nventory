@@ -108,7 +108,7 @@ class _ListPenjualanInventoryState extends State<ListPenjualanInventory> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: const Text('Pilih Item'),
+          title: Text('Pilih Item', style: TextStyle(fontSize: 16)),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -451,9 +451,9 @@ class _ListPenjualanInventoryState extends State<ListPenjualanInventory> {
                   horizontal: 24,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.cyan.shade50,
+                  color: Color(0xffF5EFE6),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.cyan.shade100),
+                  border: Border.all(color: Color.fromARGB(255, 243, 232, 216)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -463,7 +463,7 @@ class _ListPenjualanInventoryState extends State<ListPenjualanInventory> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
-                        color: Colors.cyan,
+                        color: Colors.black,
                       ),
                     ),
                     const SizedBox(height: 10),

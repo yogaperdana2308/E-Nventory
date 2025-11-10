@@ -80,10 +80,7 @@ class _HomePageProjectState extends State<HomePageProject> {
                   ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 20,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

@@ -1,4 +1,5 @@
 import 'package:enventory/view/bottom_navigasi.dart';
+import 'package:enventory/view/edit_profile.dart';
 import 'package:enventory/view/home_screen.dart';
 import 'package:enventory/view/login_screen.dart';
 import 'package:enventory/view/register_screen.dart';
@@ -25,6 +26,8 @@ class MyApp extends StatelessWidget {
         '/home_page': (context) => HomePageProject(),
         '/login_screen': (context) => LoginScreenProject(),
         '/bottom_navigasi': (context) => NavBottom(),
+        // '/splash_screen': (context) => SplashScreen(),
+        'edit_profile': (context) => EditProfilePage(),
       },
       title: 'E-Nventory',
       theme: ThemeData(
