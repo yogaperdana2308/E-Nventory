@@ -28,7 +28,7 @@ class tambahJualButton extends StatelessWidget {
       },
       borderRadius: BorderRadius.circular(30),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+        padding: EdgeInsets.symmetric(horizontal: 22, vertical: 14),
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(30),

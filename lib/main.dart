@@ -3,21 +3,21 @@ import 'package:enventory/view/edit_profile.dart';
 import 'package:enventory/view/home_screen.dart';
 import 'package:enventory/view/login_screen.dart';
 import 'package:enventory/view/register_screen.dart';
+import 'package:enventory/view/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
-  final prefs = await SharedPreferences.getInstance();
-  final bool isLogin = prefs.getBool('isLogin') ?? false;
-  runApp(MyApp(isLogin: isLogin));
+  // final prefs = await SharedPreferences.getInstance();
+  // final bool isLogin = prefs.getBool('isLogin') ?? false;
+  // runApp(MyApp(isLogin: isLogin));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final bool isLogin;
-  const MyApp({super.key, required this.isLogin});
+  const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.greenAccent),
       ),
-      home: isLogin ? NavBottom() : LoginScreenProject(),
+      home: SplashScreen(),
     );
   }
 }

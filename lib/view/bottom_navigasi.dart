@@ -28,11 +28,12 @@ class _NavBottomState extends State<NavBottom> {
 
       bottomNavigationBar: CurvedNavigationBar(
         animationCurve: Easing.legacyDecelerate,
-        backgroundColor: Color(0xFF00BCD4).withOpacity(0.04),
+
+        backgroundColor: Color(0xff6D94C5),
         items: <Widget>[
           Icon(Icons.home_outlined, color: Colors.blue, size: 24),
+          Icon(Icons.sell_outlined, color: Colors.blue, size: 24),
           Icon(Icons.shopping_cart_outlined, color: Colors.blue, size: 24),
-          Icon(Icons.outbox_outlined, color: Colors.blue, size: 24),
           Icon(Icons.settings_outlined, color: Colors.blue, size: 24),
         ],
         onTap: (index) {

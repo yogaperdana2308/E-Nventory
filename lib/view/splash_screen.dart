@@ -1,26 +1,98 @@
-// import 'package:enventory/view/home_screen.dart';
-// import 'package:flutter/material.dart';
+import 'package:animate_do/animate_do.dart';
+import 'package:enventory/preferences/preferencesHandler.dart';
+import 'package:enventory/view/bottom_navigasi.dart';
+import 'package:enventory/view/login_screen.dart';
+import 'package:flutter/material.dart';
 
-// class SplashScreen extends StatefulWidget {
-//   const SplashScreen({super.key});
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
 
-//   @override
-//   State<SplashScreen> createState() => _SplashScreenState();
-// }
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
 
-// class _SplashScreenState extends State<SplashScreen> {
-//   @override
-//   void initState() {
-//     super.initState();
-//      time( Duration(seconds: 3), () {
-//       Navigator.pushReplacement(
-//         context,
-//         MaterialPageRoute(builder: (context) => HomePageProject()),
-//       );
-//     });
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    isLoginFunction();
+  }
 
-//     Widget (BuildContext context) {
-//       return Container();
-//     }
-//   }
-// }
+  isLoginFunction() async {
+    // Tambah sedikit delay agar animasi dan loading bar sempat tampil
+    await Future.delayed(const Duration(seconds: 3));
+    var isLogin = await PreferenceHandler.getLogin();
+    if (isLogin != null && isLogin == true) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const NavBottom()),
+        (route) => false,
+      );
+    } else {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreenProject()),
+        (route) => false,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xff256BE8), Color(0xff1CE2DA)],
+          ),
+        ),
+        width: double.infinity,
+        height: double.infinity,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ZoomIn(
+              duration: const Duration(milliseconds: 3000),
+              child: CircleAvatar(
+                radius: 100,
+                backgroundImage: const AssetImage(
+                  "assets/images/logo_sementara1.png",
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 72),
+
+            // Animasi loading bar muncul dari bawah
+            FadeInUp(
+              duration: const Duration(milliseconds: 1200),
+              child: Column(
+                children: const [
+                  SizedBox(
+                    width: 200,
+                    child: LinearProgressIndicator(
+                      backgroundColor: Colors.white24,
+                      color: Colors.white,
+                      minHeight: 5,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "Loading...",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

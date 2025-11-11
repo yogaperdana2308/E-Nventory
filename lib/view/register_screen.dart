@@ -18,7 +18,7 @@ class _RegisterScreenProjectState extends State<RegisterScreenProject> {
   final TextEditingController emailC = TextEditingController();
   final TextEditingController passwordC = TextEditingController();
 
-  bool isVisibility = false;
+  bool isVisibility = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(body: Stack(children: [buildBackground(), buildLayer()]));
@@ -34,7 +34,7 @@ class _RegisterScreenProjectState extends State<RegisterScreenProject> {
           children: [
             Center(
               child: Container(
-                height: 650,
+                height: 670,
                 width: 360,
                 decoration: BoxDecoration(
                   color: Color(0xffF5EFE6).withOpacity(0.9),
@@ -61,6 +61,26 @@ class _RegisterScreenProjectState extends State<RegisterScreenProject> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          SizedBox(height: 24),
+                          SizedBox(
+                            height: 72,
+                            width: 72,
+                            child: Image(
+                              image: AssetImage(
+                                'assets/images/logo_sementara1.png',
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 12),
+                          Text(
+                            'e-Nventory',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                          SizedBox(height: 36),
                           Text(
                             "Welcome",
                             style: TextStyle(
@@ -68,9 +88,8 @@ class _RegisterScreenProjectState extends State<RegisterScreenProject> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          height(12),
                           Text("Register to access your account"),
-                          height(24),
+                          height(12),
                           buildTitle("Username"),
                           height(12),
                           buildTextField(
@@ -219,7 +238,7 @@ class _RegisterScreenProjectState extends State<RegisterScreenProject> {
     return TextFormField(
       validator: validator,
       controller: controller,
-      obscureText: isPassword ? isVisibility : false,
+      obscureText: isPassword ? isVisibility : true,
       decoration: InputDecoration(
         hintText: hintText,
         border: OutlineInputBorder(

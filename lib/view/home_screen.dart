@@ -253,7 +253,7 @@ class _HomePageProjectState extends State<HomePageProject> {
                   SizedBox(width: 16),
                   tambahJualButton(
                     label: "Jual Barang",
-                    icon: Icons.shopping_cart_outlined,
+                    icon: Icons.sell_outlined,
                     color: Colors.blue.withOpacity(0.6), // biru toska
                     tujuan: JualBarang(),
                   ),
