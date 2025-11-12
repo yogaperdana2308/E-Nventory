@@ -196,6 +196,7 @@ class _ListStockState extends State<ListStock> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.blue.withOpacity(0.6),
         onPressed: () => _showItemDialog(),

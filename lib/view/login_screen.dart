@@ -34,11 +34,13 @@ class _LoginScreenProjectState extends State<LoginScreenProject> {
           child: Center(
             child: Column(
               children: [
+                SizedBox(height: 24),
                 Image.asset(
-                  'assets/images/LogoProject.png',
-                  height: 120,
-                  width: 120,
+                  'assets/images/logo_sementara1.png',
+                  height: 90,
+                  width: 90,
                 ),
+                SizedBox(height: 12),
                 const Text(
                   'e-Nventory',
                   style: TextStyle(
@@ -47,7 +49,7 @@ class _LoginScreenProjectState extends State<LoginScreenProject> {
                     fontFamily: 'Inter',
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [

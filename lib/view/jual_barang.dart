@@ -78,7 +78,7 @@ class _JualBarangState extends State<JualBarang> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tambah Transaksi Penjualan'),
+        title: const Text('Masukkan  Transaksi'),
         centerTitle: true,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
@@ -296,12 +296,11 @@ class _JualBarangState extends State<JualBarang> {
                       await DbHelper.updateItem(updatedItem);
                       await DbHelper.createSales(CreateSales);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           backgroundColor: Colors.green,
                           content: Text('Transaksi berhasil disimpan!'),
                         ),
                       );
-
                       Navigator.pop(
                         context,
                         true,

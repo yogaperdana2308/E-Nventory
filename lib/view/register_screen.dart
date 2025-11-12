@@ -18,7 +18,7 @@ class _RegisterScreenProjectState extends State<RegisterScreenProject> {
   final TextEditingController emailC = TextEditingController();
   final TextEditingController passwordC = TextEditingController();
 
-  bool isVisibility = true;
+  bool isVisibility = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(body: Stack(children: [buildBackground(), buildLayer()]));
@@ -31,10 +31,12 @@ class _RegisterScreenProjectState extends State<RegisterScreenProject> {
         physics: NeverScrollableScrollPhysics(),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+
           children: [
+            SizedBox(height: 24),
             Center(
               child: Container(
-                height: 670,
+                height: 700,
                 width: 360,
                 decoration: BoxDecoration(
                   color: Color(0xffF5EFE6).withOpacity(0.9),
@@ -238,7 +240,7 @@ class _RegisterScreenProjectState extends State<RegisterScreenProject> {
     return TextFormField(
       validator: validator,
       controller: controller,
-      obscureText: isPassword ? isVisibility : true,
+      obscureText: isPassword ? isVisibility : false,
       decoration: InputDecoration(
         hintText: hintText,
         border: OutlineInputBorder(
