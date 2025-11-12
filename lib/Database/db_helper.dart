@@ -15,7 +15,7 @@ class DbHelper {
       join(dbPath, 'enventory.db'),
       onCreate: (db, version) async {
         await db.execute(
-          "CREATE TABLE $tableUser(id INTEGER PRIMARY KEY AUTOINCREMENT,  username TEXT, nomorhp INTEGER, email TEXT, password TEXT)",
+          "CREATE TABLE $tableUser(id INTEGER PRIMARY KEY AUTOINCREMENT,  username TEXT, nomorhp INTEGER, email TEXT, password TEXT, profil TEXT)",
         );
         await db.execute(
           "CREATE TABLE $tableItem(id INTEGER PRIMARY KEY AUTOINCREMENT,  name TEXT, stock INTEGER, price INTEGER, date TEXT)",
