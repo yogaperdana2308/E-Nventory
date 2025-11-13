@@ -77,6 +77,7 @@ class _JualBarangState extends State<JualBarang> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Masukkan  Transaksi'),
         centerTitle: true,
@@ -252,34 +253,40 @@ class _JualBarangState extends State<JualBarang> {
                     onPressed: () async {
                       if (selectedItem == null ||
                           totalPrice <= 0 ||
-                          qtyController.text.isEmpty) {
+                          qtyController.text.isEmpty ||
+                          dateControlller.text.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Isi semua data dengan benar!'),
+                            backgroundColor: Colors.red,
                           ),
                         );
                         return;
                       }
-                      final qty = int.tryParse(qtyController.text) ?? 0;
 
+                      final qty = int.tryParse(qtyController.text) ?? 0;
                       if (qty <= 0) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Jumlah terjual harus lebih dari 0!'),
+                            backgroundColor: Colors.orange,
                           ),
                         );
                         return;
                       }
-                      // Kurangi stok barang
+
                       final newStock = selectedItem!.stock - qty;
                       if (newStock < 0) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Stok tidak mencukupi!'),
+                            backgroundColor: Colors.red,
                           ),
                         );
                         return;
                       }
+
+                      // 🔹 Update item
                       final updatedItem = ItemModel(
                         id: selectedItem!.id,
                         name: selectedItem!.name,
@@ -288,25 +295,43 @@ class _JualBarangState extends State<JualBarang> {
                         stock: newStock,
                       );
 
-                      final CreateSales = SalesModel(
+                      // 🔹 Buat data penjualan
+                      final createSales = SalesModel(
                         itemId: selectedItem!.id!,
-                        quantity: int.parse(qtyController.text),
+                        quantity: qty,
                         price: selectedItem!.price,
-                      );
-                      await DbHelper.updateItem(updatedItem);
-                      await DbHelper.createSales(CreateSales);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Colors.green,
-                          content: Text('Transaksi berhasil disimpan!'),
+                        date: DateFormat('yyyy-MM-dd').format(
+                          DateFormat('dd/MM/yyyy').parse(dateControlller.text),
                         ),
                       );
-                      Navigator.pop(
+
+                      // 🔹 Simpan ke database
+                      await DbHelper.updateItem(updatedItem);
+                      await DbHelper.createSales(createSales);
+
+                      // ✅ Gunakan messenger dari root supaya tidak hilang karena pop
+                      final messenger = ScaffoldMessenger.of(context);
+                      messenger.showSnackBar(
+                        const SnackBar(
+                          content: Text('Transaksi berhasil disimpan!'),
+                          backgroundColor: Colors.green,
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+
+                      // ✅ Tunggu snackbar tampil
+                      await Future.delayed(const Duration(seconds: 1));
+
+                      // ✅ Pastikan context masih aktif
+                      if (!mounted) return;
+
+                      // ✅ Navigasi pakai pushReplacementNamed biar dijamin pindah
+                      Navigator.of(
                         context,
-                        true,
-                      ); // kirim sinyal ke halaman sebelumnya
+                      ).pushNamedAndRemoveUntil('/home', (route) => false);
                     },
-                    child: Text(
+
+                    child: const Text(
                       'Simpan',
                       style: TextStyle(color: Colors.white),
                     ),

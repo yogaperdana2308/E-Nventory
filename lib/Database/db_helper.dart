@@ -21,7 +21,7 @@ class DbHelper {
           "CREATE TABLE $tableItem(id INTEGER PRIMARY KEY AUTOINCREMENT,  name TEXT, stock INTEGER, price INTEGER, date TEXT)",
         );
         await db.execute(
-          "CREATE TABLE $tableSales(id INTEGER PRIMARY KEY AUTOINCREMENT,  item_id INTEGER, quantity INTEGER, price INTEGER, sales INTEGER, FOREIGN KEY (item_id) REFERENCES $tableItem(id) ON DELETE CASCADE ON UPDATE CASCADE)",
+          "CREATE TABLE $tableSales(id INTEGER PRIMARY KEY AUTOINCREMENT,  item_id INTEGER, quantity INTEGER, price INTEGER, sales INTEGER, date TEXT, FOREIGN KEY (item_id) REFERENCES $tableItem(id) ON DELETE CASCADE ON UPDATE CASCADE)",
         );
       },
       version: 1,

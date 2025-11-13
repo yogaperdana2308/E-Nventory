@@ -44,8 +44,13 @@ class _ListPenjualanInventoryState extends State<ListPenjualanInventory> {
       );
 
       // Format tanggal (sementara pakai tanggal hari ini, bisa diganti kalau ada field tanggal di DB)
-      final now = DateTime.now();
-      String formattedDate = _formatDate(now);
+      String formattedDate;
+      if (sale.date != null && sale.date!.isNotEmpty) {
+        final parsedDate = DateTime.tryParse(sale.date!) ?? DateTime.now();
+        formattedDate = _formatDate(parsedDate);
+      } else {
+        formattedDate = _formatDate(DateTime.now());
+      }
 
       groupedSales.putIfAbsent(formattedDate, () => []);
 
@@ -493,7 +498,7 @@ class _ListPenjualanInventoryState extends State<ListPenjualanInventory> {
                         ),
                         Text(
                           formatRupiah(totalSales),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 16,
                             color: Colors.black87,

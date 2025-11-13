@@ -319,7 +319,7 @@ class _ListStockState extends State<ListStock> {
                     final allItems = await DbHelper.getAllItem();
                     _filterItems(query, allItems);
                   },
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: 'Cari item...',
                     icon: Icon(Icons.search),
