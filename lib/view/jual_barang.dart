@@ -1,6 +1,7 @@
 import 'package:enventory/database/db_helper.dart';
 import 'package:enventory/model/item_model.dart';
 import 'package:enventory/model/penjualan_model.dart';
+import 'package:enventory/view/bottom_navigasi.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Untuk format Rupiah
 
@@ -326,9 +327,10 @@ class _JualBarangState extends State<JualBarang> {
                       if (!mounted) return;
 
                       // ✅ Navigasi pakai pushReplacementNamed biar dijamin pindah
-                      Navigator.of(
-                        context,
-                      ).pushNamedAndRemoveUntil('/home', (route) => false);
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) => NavBottom()),
+                        (route) => false,
+                      );
                     },
 
                     child: const Text(
