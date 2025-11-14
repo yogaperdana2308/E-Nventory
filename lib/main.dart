@@ -1,5 +1,4 @@
 import 'package:enventory/view/bottom_navigasi.dart';
-import 'package:enventory/view/edit_profile.dart';
 import 'package:enventory/view/home_screen.dart';
 import 'package:enventory/view/jual_barang.dart';
 import 'package:enventory/view/login_screen.dart';
@@ -37,7 +36,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomePageProject(),
         '/bottom_navigasi': (context) => NavBottom(),
         '/jual': (context) => const JualBarang(),
-        '/edit_profile': (context) => EditProfilePage(),
+        // '/edit_profile': (context) => EditProfilePage(),
       },
     );
   }
