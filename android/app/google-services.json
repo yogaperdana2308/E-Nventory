@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "479026435262",
+    "project_id": "yoga-project-f840d",
+    "storage_bucket": "yoga-project-f840d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:479026435262:android:4df69d539eff01db9d3aef",
+        "android_client_info": {
+          "package_name": "com.ppkd.enven"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-OVZD9yxCzxtO0eRSQ9LBYqjhS-AxuXs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
