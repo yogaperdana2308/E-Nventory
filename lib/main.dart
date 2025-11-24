@@ -2,8 +2,8 @@ import 'package:enventory/firebase_options.dart';
 import 'package:enventory/view/bottom_navigasi.dart';
 import 'package:enventory/view/home_screen.dart';
 import 'package:enventory/view/jual_barang.dart';
-import 'package:enventory/view/login_screen.dart';
-import 'package:enventory/view/register_screen.dart';
+import 'package:enventory/view/login_screen_copy.dart';
+import 'package:enventory/view/register_screen_copy.dart';
 import 'package:enventory/view/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -30,10 +30,9 @@ class MyApp extends StatelessWidget {
 
       home: const SplashScreen(),
 
-      // 🔹 Semua route didefinisikan dengan benar & konsisten
       routes: {
-        '/register_screen': (context) => RegisterScreenProject(),
-        '/login_screen': (context) => LoginScreenProject(),
+        '/register_screen_copy': (context) => RegisterScreenFirebase(),
+        '/login_screen_copy': (context) => LoginScreenFirebase(),
         '/home': (context) => const HomePageProject(),
         '/bottom_navigasi': (context) => NavBottom(),
         '/jual': (context) => const JualBarang(),
