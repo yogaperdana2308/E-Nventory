@@ -21,4 +21,8 @@ class PreferenceHandler {
     final prefs = await SharedPreferences.getInstance();
     prefs.remove(isLogin);
   }
+  // static saveToken(String uid) async {
+  //   final prefs = await SharedPreferences.getInstance();
+
+  // }
 }

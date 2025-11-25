@@ -1,7 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:enventory/preferences/preferencesHandler.dart';
 import 'package:enventory/view/bottom_navigasi.dart';
-import 'package:enventory/view/login_screen_copy.dart';
+import 'package:enventory/view/login_screen_firebase.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
