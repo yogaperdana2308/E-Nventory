@@ -9,6 +9,9 @@ class DbHelper {
   static const tableItem = 'items';
   static const tableSales = 'sales';
 
+  // ============================================
+  // OPEN DATABASE
+  // ============================================
   static Future<Database> db() async {
     final dbPath = await getDatabasesPath();
     return openDatabase(
@@ -28,15 +31,16 @@ class DbHelper {
     );
   }
 
+  // ============================================
+  // USER
+  // ============================================
   static Future<void> registerUser(UserModel user) async {
     final dbs = await db();
-    //Insert adalah fungsi untuk menambahkan data (CREATE)
     await dbs.insert(
       tableUser,
       user.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-    print(user.toMap());
   }
 
   static Future<UserModel?> loginUser({
@@ -44,15 +48,12 @@ class DbHelper {
     required String password,
   }) async {
     final dbs = await db();
-    //query adalah fungsi untuk menampilkan data (READ)
     final List<Map<String, dynamic>> results = await dbs.query(
       tableUser,
       where: 'email = ? AND password = ?',
       whereArgs: [email, password],
     );
-    final List<Map<String, dynamic>> check = await dbs.query(tableUser);
 
-    print(check);
     if (results.isNotEmpty) {
       return UserModel.fromMap(results.first);
     }
@@ -61,32 +62,30 @@ class DbHelper {
 
   static Future<List<UserModel>> getAllUser() async {
     final dbs = await db();
-    final List<Map<String, dynamic>> results = await dbs.query(tableUser);
-    print(results.map((e) => UserModel.fromMap(e)).toList());
+    final results = await dbs.query(tableUser);
     return results.map((e) => UserModel.fromMap(e)).toList();
   }
 
+  // ============================================
+  // ITEM (STOCK)
+  // ============================================
   static Future<List<ItemModel>> getAllItem() async {
     final dbs = await db();
     final List<Map<String, dynamic>> results = await dbs.query(tableItem);
-    print(results.map((e) => ItemModel.fromMap(e)).toList());
     return results.map((e) => ItemModel.fromMap(e)).toList();
   }
 
   static Future<void> createItem(ItemModel item) async {
     final dbs = await db();
-    //Insert adalah fungsi untuk menambahkan data (CREATE)
     await dbs.insert(
       tableItem,
       item.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-    print(item.toMap());
   }
 
   static Future<void> updateItem(ItemModel item) async {
     final dbs = await db();
-    //Insert adalah fungsi untuk menambahkan data (CREATE)
     await dbs.update(
       tableItem,
       item.toMap(),
@@ -94,31 +93,51 @@ class DbHelper {
       whereArgs: [item.id],
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-    print(item.toMap());
   }
 
   static Future<void> deleteItem(int id) async {
     final dbs = await db();
-    //Insert adalah fungsi untuk menambahkan data (CREATE)
     await dbs.delete(tableItem, where: "id = ?", whereArgs: [id]);
   }
 
+  // ============================================
+  // NEW: CEK ITEM DUPLIKAT (NAME + DATE)
+  // ============================================
+  static Future<ItemModel?> getItemByNameAndDate(
+    String name,
+    String date,
+  ) async {
+    final dbs = await db();
+    final normalized = name.trim().toLowerCase();
+
+    final res = await dbs.query(
+      tableItem,
+      where: "LOWER(name) = ? AND date = ?",
+      whereArgs: [normalized, date],
+    );
+
+    if (res.isNotEmpty) {
+      return ItemModel.fromMap(res.first);
+    }
+    return null;
+  }
+
+  // ============================================
+  // SALES (PENJUALAN)
+  // ============================================
   static Future<List<SalesModel>> getAllSales() async {
     final dbs = await db();
     final List<Map<String, dynamic>> results = await dbs.query(tableSales);
-    print(results.map((e) => SalesModel.fromMap(e)).toList());
     return results.map((e) => SalesModel.fromMap(e)).toList();
   }
 
   static Future<void> deleteSales(int id) async {
     final dbs = await db();
-    //Insert adalah fungsi untuk menambahkan data (CREATE)
     await dbs.delete(tableSales, where: "id = ?", whereArgs: [id]);
   }
 
   static Future<void> updateSales(ItemModel sales) async {
     final dbs = await db();
-    //Insert adalah fungsi untuk menambahkan data (CREATE)
     await dbs.update(
       tableSales,
       sales.toMap(),
@@ -126,17 +145,14 @@ class DbHelper {
       whereArgs: [sales.id],
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-    print(sales.toMap());
   }
 
   static Future<void> createSales(SalesModel sales) async {
     final dbs = await db();
-    //Insert adalah fungsi untuk menambahkan data (CREATE)
     await dbs.insert(
       tableSales,
       sales.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-    print(sales.toMap());
   }
 }

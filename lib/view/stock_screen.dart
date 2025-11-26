@@ -183,10 +183,28 @@ class _ListStockState extends State<ListStock> {
               );
               print(newItem);
 
-              if (existingItem == null) {
-                await DbHelper.createItem(newItem);
+              final existing = await DbHelper.getItemByNameAndDate(
+                nameController.text,
+                dateController.text,
+              );
+
+              if (existing != null && existingItem == null) {
+                // Item dengan nama & tanggal ini sudah ada
+                final updated = ItemModel(
+                  id: existing.id,
+                  name: existing.name,
+                  stock: existing.stock + int.parse(stockController.text),
+                  price: int.parse(priceController.text),
+                  date: existing.date,
+                );
+
+                await DbHelper.updateItem(updated);
               } else {
-                await DbHelper.updateItem(newItem);
+                if (existingItem == null) {
+                  await DbHelper.createItem(newItem);
+                } else {
+                  await DbHelper.updateItem(newItem);
+                }
               }
 
               getData();
