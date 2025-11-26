@@ -64,9 +64,31 @@ class _ListPenjualanInventoryState extends State<ListPenjualanInventory> {
     }
 
     // Ubah ke dalam bentuk List<SalesDay> agar bisa dipakai di UI
-    final List<SalesDay> data = groupedSales.entries
-        .map((e) => SalesDay(date: e.key, items: e.value))
-        .toList();
+    final List<SalesDay> data = groupedSales.entries.map((entry) {
+      // Map untuk menggabungkan item berdasarkan nama (tanpa memperhatikan kapital)
+      final Map<String, SalesItem> merged = {};
+
+      for (var item in entry.value) {
+        final key = item.name.trim().toLowerCase(); // normalisasi nama item
+
+        if (!merged.containsKey(key)) {
+          merged[key] = SalesItem(
+            name: item.name,
+            price: item.price,
+            qty: item.qty,
+          );
+        } else {
+          // jika item sama → jumlahkan qty dan total harga
+          merged[key] = SalesItem(
+            name: merged[key]!.name,
+            price: item.price, // harga per unit tetap sama
+            qty: merged[key]!.qty + item.qty,
+          );
+        }
+      }
+
+      return SalesDay(date: entry.key, items: merged.values.toList());
+    }).toList();
 
     print(data);
 

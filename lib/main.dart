@@ -31,8 +31,8 @@ class MyApp extends StatelessWidget {
       home: const SplashScreen(),
 
       routes: {
-        '/register_screen_copy': (context) => RegisterScreenFirebase(),
-        '/login_screen_copy': (context) => LoginScreenFirebase(),
+        '/register_screen_firebase': (context) => RegisterScreenFirebase(),
+        '/login_screen_firebase': (context) => LoginScreenFirebase(),
         '/home_screen_firebase': (context) => const HomePageProjectFirebase(),
         '/bottom_navigasi': (context) => NavBottom(),
         '/jual': (context) => const JualBarang(),

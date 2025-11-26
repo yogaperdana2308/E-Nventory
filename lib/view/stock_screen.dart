@@ -11,6 +11,17 @@ class ListStock extends StatefulWidget {
 }
 
 class _ListStockState extends State<ListStock> {
+  String formatItemDate(String? dateString) {
+    if (dateString == null || dateString.isEmpty) return "-";
+
+    try {
+      DateTime date = DateFormat('dd/MM/yyyy').parse(dateString);
+      return DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(date);
+    } catch (e) {
+      return dateString;
+    }
+  }
+
   late Future<List<ItemModel>> _listItem;
   final TextEditingController searchController = TextEditingController();
   final currencyFormat = NumberFormat.currency(
@@ -18,6 +29,38 @@ class _ListStockState extends State<ListStock> {
     symbol: 'Rp ',
     decimalDigits: 0,
   );
+
+  List<ItemModel> mergeDuplicateItems(List<ItemModel> items) {
+    final Map<String, ItemModel> grouped = {};
+
+    for (var item in items) {
+      // Normalisasi nama: buang spasi depan/belakang + huruf kecil semua
+      final normalizedName = item.name.trim().toLowerCase().replaceAll(
+        RegExp(r'\s+'),
+        ' ',
+      );
+
+      final date = item.date ?? "";
+
+      final key = "${normalizedName}_$date";
+
+      if (grouped.containsKey(key)) {
+        // Tambah stok jika item dengan key yang sama sudah ada
+        grouped[key]!.stock += item.stock;
+      } else {
+        // Simpan item pertama sebagai dasar (pakai nama aslinya)
+        grouped[key] = ItemModel(
+          id: item.id,
+          name: item.name, // tetap tampilkan nama asli pertama kali diinput
+          stock: item.stock,
+          price: item.price,
+          date: item.date,
+        );
+      }
+    }
+
+    return grouped.values.toList();
+  }
 
   List<ItemModel> filteredItems = [];
   int totalStock = 0;
@@ -80,11 +123,11 @@ class _ListStockState extends State<ListStock> {
             children: [
               TextField(
                 controller: nameController,
-                decoration: const InputDecoration(labelText: 'Nama Barang'),
+                decoration: InputDecoration(labelText: 'Nama Barang'),
               ),
               TextField(
                 controller: stockController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Stok',
                   suffixText: 'pcs',
                 ),
@@ -92,7 +135,7 @@ class _ListStockState extends State<ListStock> {
               ),
               TextField(
                 controller: priceController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Harga',
                   prefixText: 'Rp ',
                 ),
@@ -117,7 +160,7 @@ class _ListStockState extends State<ListStock> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
+            child: Text('Batal'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -126,7 +169,7 @@ class _ListStockState extends State<ListStock> {
                   priceController.text.isEmpty ||
                   dateController.text.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Semua kolom wajib diisi!')),
+                  SnackBar(content: Text('Semua kolom wajib diisi!')),
                 );
                 return;
               }
@@ -161,12 +204,12 @@ class _ListStockState extends State<ListStock> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Hapus Item'),
+        title: Text('Hapus Item'),
         content: Text('Apakah kamu yakin ingin menghapus "${item.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
+            child: Text('Batal'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -175,7 +218,7 @@ class _ListStockState extends State<ListStock> {
               getData();
               Navigator.pop(context);
             },
-            child: const Text('Hapus'),
+            child: Text('Hapus'),
           ),
         ],
       ),
@@ -205,16 +248,16 @@ class _ListStockState extends State<ListStock> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // HEADER UTAMA
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
+                  gradient: LinearGradient(
                     colors: [
                       Color.fromARGB(255, 131, 179, 238),
                       Color(0xff6D94C5),
@@ -225,7 +268,7 @@ class _ListStockState extends State<ListStock> {
                   ),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -244,7 +287,7 @@ class _ListStockState extends State<ListStock> {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // REKAPAN
               Row(
@@ -266,10 +309,10 @@ class _ListStockState extends State<ListStock> {
               ),
 
               if (lowStockItems.isNotEmpty) ...[
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.red.shade50,
                     borderRadius: BorderRadius.circular(12),
@@ -278,18 +321,18 @@ class _ListStockState extends State<ListStock> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         '⚠️ Stok Menipis (< 10)',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.redAccent,
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      SizedBox(height: 6),
                       ...lowStockItems.map(
                         (e) => Text(
                           '• ${e.name} (${e.stock} pcs)',
-                          style: const TextStyle(color: Colors.black87),
+                          style: TextStyle(color: Colors.black87),
                         ),
                       ),
                     ],
@@ -297,15 +340,15 @@ class _ListStockState extends State<ListStock> {
                 ),
               ],
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // SEARCH BAR
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: const [
+                  boxShadow: [
                     BoxShadow(
                       color: Colors.black12,
                       blurRadius: 6,
@@ -326,7 +369,7 @@ class _ListStockState extends State<ListStock> {
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
 
               // ITEM LIST
               Expanded(
@@ -334,25 +377,64 @@ class _ListStockState extends State<ListStock> {
                   future: _listItem,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
+                      return Center(child: CircularProgressIndicator());
                     }
                     if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(child: Text('Tidak ada data'));
+                      return Center(child: Text('Tidak ada data'));
                     }
-
-                    final data = searchController.text.isEmpty
+                    final original = searchController.text.isEmpty
                         ? snapshot.data!
                         : filteredItems;
+                    final data = mergeDuplicateItems(original);
 
                     return ListView.builder(
                       itemCount: data.length,
                       itemBuilder: (context, index) {
                         final item = data[index];
-                        return _InventoryItemCard(
-                          item: item,
-                          onEdit: () => _showItemDialog(existingItem: item),
-                          onDelete: () => _deleteItem(item),
-                          currencyFormat: currencyFormat,
+
+                        // Format tanggal barang
+                        final itemDateFormatted = formatItemDate(item.date);
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // === Tanggal Input ===
+                            Padding(
+                              padding: EdgeInsets.only(
+                                left: 4,
+                                bottom: 6,
+                                top: 6,
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.calendar_today_outlined,
+                                    size: 14,
+                                    color: Colors.teal,
+                                  ),
+                                  SizedBox(width: 6),
+                                  Text(
+                                    itemDateFormatted,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // === Item Card ===
+                            _InventoryItemCard(
+                              item: item,
+                              onEdit: () => _showItemDialog(existingItem: item),
+                              onDelete: () => _deleteItem(item),
+                              currencyFormat: currencyFormat,
+                            ),
+
+                            SizedBox(height: 8),
+                          ],
                         );
                       },
                     );
@@ -375,8 +457,8 @@ class _ListStockState extends State<ListStock> {
   }) {
     return Expanded(
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.all(16),
+        margin: EdgeInsets.symmetric(horizontal: 4),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(16),
@@ -385,7 +467,7 @@ class _ListStockState extends State<ListStock> {
         child: Column(
           children: [
             Icon(icon, color: color, size: 28),
-            const SizedBox(height: 6),
+            SizedBox(height: 6),
             Text(
               value,
               style: TextStyle(
@@ -426,12 +508,12 @@ class _InventoryItemCard extends StatelessWidget {
     final isLowStock = item.stock < 10;
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.symmetric(vertical: 6),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isLowStock ? Colors.red.shade50 : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
         ],
         border: isLowStock ? Border.all(color: Colors.redAccent) : null,
@@ -446,12 +528,9 @@ class _InventoryItemCard extends StatelessWidget {
               children: [
                 Text(
                   item.name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Row(
                   children: [
                     Text(
@@ -460,12 +539,12 @@ class _InventoryItemCard extends StatelessWidget {
                         color: isLowStock ? Colors.red : Colors.orange,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    const Text('|'),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
+                    Text('|'),
+                    SizedBox(width: 8),
                     Text(
                       currencyFormat.format(item.price),
-                      style: const TextStyle(color: Colors.cyan),
+                      style: TextStyle(color: Colors.cyan),
                     ),
                   ],
                 ),
@@ -476,11 +555,11 @@ class _InventoryItemCard extends StatelessWidget {
             children: [
               IconButton(
                 onPressed: onEdit,
-                icon: const Icon(Icons.edit, color: Colors.cyan),
+                icon: Icon(Icons.edit, color: Colors.cyan),
               ),
               IconButton(
                 onPressed: onDelete,
-                icon: const Icon(Icons.delete, color: Colors.redAccent),
+                icon: Icon(Icons.delete, color: Colors.redAccent),
               ),
             ],
           ),

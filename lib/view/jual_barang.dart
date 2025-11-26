@@ -71,8 +71,31 @@ class _JualBarangState extends State<JualBarang> {
   }
 
   getData() async {
-    items = await DbHelper.getAllItem();
-    setState(() {});
+    final allItems = await DbHelper.getAllItem();
+
+    // Map untuk menampung item unik berdasarkan nama (case-insensitive)
+    final Map<String, ItemModel> unique = {};
+
+    for (var item in allItems) {
+      // normalisasi nama: spasi berlebih dibuang, huruf kecil semua
+      final key = item.name.trim().toLowerCase().replaceAll(
+        RegExp(r'\s+'),
+        ' ',
+      );
+
+      // kalau nama ini belum ada -> simpan
+      if (!unique.containsKey(key)) {
+        unique[key] = item;
+      } else {
+        // kalau mau, bisa tambahkan stok ke item pertama
+        // unique[key]!.stock += item.stock;
+      }
+    }
+
+    setState(() {
+      items = unique.values.toList()
+        ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    });
   }
 
   @override
@@ -113,7 +136,6 @@ class _JualBarangState extends State<JualBarang> {
                   borderSide: BorderSide.none,
                 ),
               ),
-
               value: selectedItem,
               onChanged: (value) {
                 setState(() {
@@ -121,10 +143,11 @@ class _JualBarangState extends State<JualBarang> {
                   priceController.text = value?.price.toString() ?? '0';
                 });
               },
-              items: items?.map((item) {
+              items: (items ?? []).map((item) {
                 return DropdownMenuItem(value: item, child: Text(item.name));
               }).toList(),
             ),
+
             SizedBox(height: 12),
             Text("Tanggal *", style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: 6),

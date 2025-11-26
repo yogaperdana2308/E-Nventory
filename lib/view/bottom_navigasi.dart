@@ -1,7 +1,7 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:enventory/view/home_screen.dart';
+import 'package:enventory/view/home_screen%20firebase.dart';
 import 'package:enventory/view/penjualan_screen.dart';
-import 'package:enventory/view/setting_screen.dart';
+import 'package:enventory/view/setting_screen%20firebase.dart';
 import 'package:enventory/view/stock_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -16,10 +16,10 @@ class _NavBottomState extends State<NavBottom> {
   @override
   int _selectedIndex = 0;
   static final List<Widget> _widgetOptions = [
-    HomePageProject(),
+    HomePageProjectFirebase(),
     ListPenjualanInventory(),
     ListStock(),
-    SettingsPage(),
+    SettingScreenFirebase(),
   ];
   @override
   Widget build(BuildContext context) {

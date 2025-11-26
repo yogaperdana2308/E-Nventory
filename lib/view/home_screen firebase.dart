@@ -1,13 +1,13 @@
-import 'package:enventory/database/db_helper.dart';
-import 'package:enventory/model/user_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enventory/model/firebase_model.dart';
 import 'package:enventory/view/input_barang.dart';
 import 'package:enventory/view/jual_barang.dart';
 import 'package:enventory/widget/home_page.dart';
 import 'package:enventory/widget/inventory_item.dart';
 import 'package:enventory/widget/tambahjual_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePageProjectFirebase extends StatefulWidget {
   const HomePageProjectFirebase({super.key});
@@ -18,45 +18,63 @@ class HomePageProjectFirebase extends StatefulWidget {
 }
 
 class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
-  DateTime? selectedPicked = DateTime.now();
-  UserModel? user;
+  UserFirebaseModel? userModel; // <- model untuk user kita
+  DateTime today = DateTime.now();
+
   @override
   void initState() {
     super.initState();
-    getData(); // ambil data user saat halaman pertama kali dibuka
+    loadUserFromFirestore();
   }
 
-  Future<void> getData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final email = prefs.getString('email');
+  // =============================================================
+  // 🔥 LOAD DATA USER dari Firestore
+  // =============================================================
+  Future<void> loadUserFromFirestore() async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
 
-    if (email != null) {
-      final db = await DbHelper.db();
-      final result = await db.query(
-        DbHelper.tableUser,
-        where: 'email = ?',
-        whereArgs: [email],
-      );
+      if (currentUser == null) {
+        print("USER NOT LOGGED IN");
+        return;
+      }
 
-      if (result.isNotEmpty) {
+      final snap = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(currentUser.uid)
+          .get();
+
+      print("DOC EXISTS: ${snap.exists}");
+      print("DATA: ${snap.data()}");
+
+      if (snap.exists) {
         setState(() {
-          user = UserModel.fromMap(result.first);
+          userModel = UserFirebaseModel.fromMap(snap.data()!);
         });
       }
+    } catch (e) {
+      print("ERROR LOAD USER: $e");
     }
   }
 
+  // =============================================================
+  // UI
+  // =============================================================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
+
+              // =======================
+              // 🔥 HEADER – Nama & Tanggal
+              // =======================
               Container(
                 height: 130,
                 width: 400,
@@ -81,38 +99,47 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
                   ],
                 ),
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 20,
+                  ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Bagian kiri (teks sapaan dan tanggal)
+                      // TEKS USERNAME
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            user == null ? 'Loading...' : user!.username,
-                            style: TextStyle(
+                            userModel == null
+                                ? "Loading..."
+                                : (userModel!.username ?? "Tanpa Nama"),
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 19,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
+
+                          // TANGGAL
                           Text(
-                            style: TextStyle(
+                            DateFormat(
+                              'EEEE, dd MMMM yyyy',
+                              'id_ID',
+                            ).format(today),
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
-                            DateFormat(
-                              'EEEE, dd MMMM yyyy',
-                              "id_ID",
-                            ).format(selectedPicked!),
                           ),
                         ],
                       ),
+
                       Spacer(),
-                      // Tombol search
+
+                      // SEARCH
                       Container(
                         height: 36,
                         width: 36,
@@ -120,18 +147,16 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
                           color: Colors.white.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.search,
-                            size: 20,
-                            color: Colors.white,
-                          ),
+                        child: const Icon(
+                          Icons.search,
+                          size: 20,
+                          color: Colors.white,
                         ),
                       ),
+
                       const SizedBox(width: 12),
 
-                      // Tombol notifikasi
+                      // NOTIF
                       Container(
                         height: 36,
                         width: 36,
@@ -141,16 +166,20 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
                         ),
                         child: const Icon(
                           Icons.notifications_none_outlined,
-                          weight: 20,
-                          color: Colors.white,
                           size: 20,
+                          color: Colors.white,
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-              SizedBox(height: 24),
+
+              const SizedBox(height: 24),
+
+              // ======================
+              // CARD DASHBOARD
+              // ======================
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -160,19 +189,24 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
                     value: "Rp 1.2M",
                     persentase: "+12%",
                     persentaseColor: Colors.green,
-                    iconBgColor: Color(0xFFE0F7FA),
+                    iconBgColor: const Color(0xFFE0F7FA),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   DashboardCard(
                     icon: Icons.inventory_2_outlined,
                     title: "Sisa Stok",
                     value: "3,842",
                     alert: true,
-                    iconBgColor: Color(0xFFFFF3E0),
+                    iconBgColor: const Color(0xFFFFF3E0),
                   ),
                 ],
               ),
-              SizedBox(height: 24),
+
+              const SizedBox(height: 24),
+
+              // ======================
+              // TOTAL PENDAPATAN
+              // ======================
               Container(
                 width: 380,
                 height: 120,
@@ -201,68 +235,64 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
                     horizontal: 20,
                     vertical: 16,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Bagian kiri: teks
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text(
-                            "Total Pendapatan",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            "Rp 45.8M",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            "Bulan ini",
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Text(
+                        "Total Pendapatan",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        "Rp 45.8M",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Bulan ini",
+                        style: TextStyle(color: Colors.white70, fontSize: 12),
                       ),
                     ],
                   ),
                 ),
               ),
-              SizedBox(height: 12),
+
+              const SizedBox(height: 12),
+
+              // BUTTON BARANG & JUAL
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   tambahJualButton(
                     label: "Tambah Barang",
                     icon: Icons.add,
-                    color: Colors.blue.withOpacity(0.6), // oranye
+                    color: Colors.blue.withOpacity(0.6),
                     tujuan: InputItem(),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   tambahJualButton(
                     label: "Jual Barang",
                     icon: Icons.sell_outlined,
-                    color: Colors.blue.withOpacity(0.6), // biru toska
+                    color: Colors.blue.withOpacity(0.6),
                     tujuan: JualBarang(),
                   ),
                 ],
               ),
 
-              //List Barang
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
+
+              // ======================
+              // STATUS INVENTORI
+              // ======================
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -280,13 +310,11 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
                     ),
                   ],
                 ),
-
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Judul dan tombol lihat semua
-                    Text(
+                    const Text(
                       "Status Inventori",
                       style: TextStyle(
                         fontSize: 18,
@@ -294,7 +322,6 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    // Item 1
                     InventoryItem(
                       name: "Minyak Goreng",
                       stock: 42,
@@ -303,7 +330,6 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
                       statusTextColor: Colors.orange,
                     ),
                     const SizedBox(height: 12),
-                    // Item 2
                     InventoryItem(
                       name: "Gula Pasir 1kg",
                       stock: 89,
@@ -312,7 +338,6 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
                       statusTextColor: Colors.green,
                     ),
                     const SizedBox(height: 12),
-                    // Item 3
                     InventoryItem(
                       name: "Beras 5kg",
                       stock: 67,

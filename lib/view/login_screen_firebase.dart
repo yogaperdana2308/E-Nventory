@@ -1,9 +1,8 @@
 import 'package:enventory/Service/firebase.dart';
-import 'package:enventory/preferences/preferencesHandler.dart';
+import 'package:enventory/view/bottom_navigasi.dart';
 import 'package:enventory/widget/login_akun.dart';
 import 'package:enventory/widget/login_button.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreenFirebase extends StatefulWidget {
   const LoginScreenFirebase({super.key});
@@ -19,10 +18,6 @@ class _LoginScreenFirebaseState extends State<LoginScreenFirebase> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailC = TextEditingController();
   final TextEditingController passwordC = TextEditingController();
-  Future<void> saveUserSession(String email) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('email', email);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,13 +29,13 @@ class _LoginScreenFirebaseState extends State<LoginScreenFirebase> {
           child: Center(
             child: Column(
               children: [
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 Image.asset(
                   'assets/images/logo_sementara1.png',
                   height: 90,
                   width: 90,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 const Text(
                   'e-Nventory',
                   style: TextStyle(
@@ -65,8 +60,10 @@ class _LoginScreenFirebaseState extends State<LoginScreenFirebase> {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 24),
 
+                // ===================== CARD LOGIN =====================
                 Container(
                   height: 500,
                   width: 340,
@@ -84,7 +81,7 @@ class _LoginScreenFirebaseState extends State<LoginScreenFirebase> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Form(
-                      key: _formKey, // <-- Tambahkan form key
+                      key: _formKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -109,12 +106,6 @@ class _LoginScreenFirebaseState extends State<LoginScreenFirebase> {
                               if (value == null || value.isEmpty) {
                                 return 'Email tidak boleh kosong';
                               }
-                              final emailRegex = RegExp(
-                                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                              );
-                              if (!emailRegex.hasMatch(value)) {
-                                return 'Format email tidak valid';
-                              }
                               return null;
                             },
                           ),
@@ -130,11 +121,11 @@ class _LoginScreenFirebaseState extends State<LoginScreenFirebase> {
                             icon: Icons.lock_outline,
                             isPassword: true,
                             input: 'Enter your password',
+                            obscurePass: obscurePass,
                             lambang: const Icon(
                               Icons.visibility_off_rounded,
                               size: 16,
                             ),
-                            obscurePass: obscurePass,
                             whenPress: () {
                               setState(() {
                                 obscurePass = !obscurePass;
@@ -189,20 +180,22 @@ class _LoginScreenFirebaseState extends State<LoginScreenFirebase> {
                             ],
                           ),
 
+                          // ===================== BUTTON LOGIN =====================
                           LoginButton(
                             onPress: () async {
                               if (_formKey.currentState!.validate()) {
-                                final data = await firebaseService.loginUser(
-                                  email: emailC.text,
-                                  password: passwordC.text,
+                                final user = await firebaseService.loginUser(
+                                  email: emailC.text.trim(),
+                                  password: passwordC.text.trim(),
                                 );
 
-                                if (data != null) {
-                                  await saveUserSession(emailC.text);
-                                  PreferenceHandler.saveLogin(true);
-                                  Navigator.pushNamed(
+                                if (user != null) {
+                                  // Login berhasil → masuk ke HomePage
+                                  Navigator.pushReplacement(
                                     context,
-                                    '/bottom_navigasi',
+                                    MaterialPageRoute(
+                                      builder: (_) => NavBottom(),
+                                    ),
                                   );
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -211,7 +204,6 @@ class _LoginScreenFirebaseState extends State<LoginScreenFirebase> {
                                         'Email atau password tidak sesuai',
                                       ),
                                       backgroundColor: Colors.red,
-                                      duration: Duration(seconds: 2),
                                     ),
                                   );
                                 }
@@ -222,6 +214,7 @@ class _LoginScreenFirebaseState extends State<LoginScreenFirebase> {
                           ),
 
                           const SizedBox(height: 24),
+
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -233,7 +226,7 @@ class _LoginScreenFirebaseState extends State<LoginScreenFirebase> {
                                 onPressed: () {
                                   Navigator.pushNamed(
                                     context,
-                                    '/register_screen_copy',
+                                    '/register_screen_firebase',
                                   );
                                 },
                                 child: const Text(
