@@ -101,17 +101,19 @@ class _SettingScreenFirebaseState extends State<SettingScreenFirebase> {
                 onTap: () async {
                   if (userModel == null) return;
 
-                  final refresh = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => EditProfileFirebase(user: userModel!),
-                    ),
+                  final refresh = await showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) {
+                      return EditProfileDialog(user: userModel!);
+                    },
                   );
 
                   if (refresh == true) {
                     loadUserData(); // refresh username/email
                   }
                 },
+
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
                   padding: const EdgeInsets.all(16),

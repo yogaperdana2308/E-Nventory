@@ -21,7 +21,7 @@ class DbHelper {
           "CREATE TABLE $tableUser(id INTEGER PRIMARY KEY AUTOINCREMENT,  username TEXT, nomorhp INTEGER, email TEXT, password TEXT, profil TEXT)",
         );
         await db.execute(
-          "CREATE TABLE $tableItem(id INTEGER PRIMARY KEY AUTOINCREMENT,  name TEXT, stock INTEGER, price INTEGER, date TEXT)",
+          "CREATE TABLE $tableItem(id INTEGER PRIMARY KEY AUTOINCREMENT,  name TEXT, stock INTEGER, modal INTEGER, price INTEGER, date TEXT)",
         );
         await db.execute(
           "CREATE TABLE $tableSales(id INTEGER PRIMARY KEY AUTOINCREMENT,  item_id INTEGER, quantity INTEGER, price INTEGER, sales INTEGER, date TEXT, FOREIGN KEY (item_id) REFERENCES $tableItem(id) ON DELETE CASCADE ON UPDATE CASCADE)",
@@ -98,6 +98,98 @@ class DbHelper {
   static Future<void> deleteItem(int id) async {
     final dbs = await db();
     await dbs.delete(tableItem, where: "id = ?", whereArgs: [id]);
+  }
+
+  static Future<int> getTotalStock() async {
+    final dbs = await db();
+    final result = await dbs.rawQuery(
+      "SELECT SUM(stock) as total FROM $tableItem",
+    );
+
+    if (result.isNotEmpty && result.first["total"] != null) {
+      return result.first["total"] as int;
+    }
+    return 0;
+  }
+
+  static Future<int> getTodayProfit() async {
+    final dbs = await db();
+    final today = DateTime.now();
+    final todayString = "${today.year}-${today.month}-${today.day}";
+
+    // Ambil semua sales hari ini
+    final List<Map<String, dynamic>> salesToday = await dbs.query(
+      tableSales,
+      where: "date LIKE ?",
+      whereArgs: ["$todayString%"],
+    );
+
+    int totalProfit = 0;
+
+    for (var sale in salesToday) {
+      int itemId = sale["item_id"];
+      int quantity = sale["quantity"];
+
+      // Ambil data item terkait
+      final List<Map<String, dynamic>> itemResult = await dbs.query(
+        tableItem,
+        where: "id = ?",
+        whereArgs: [itemId],
+      );
+
+      if (itemResult.isNotEmpty) {
+        final item = itemResult.first;
+
+        int modal = item["modal"] ?? 0;
+        int hargaJual = item["price"] ?? 0;
+
+        int profit = (hargaJual - modal) * quantity;
+        totalProfit += profit;
+      }
+    }
+
+    return totalProfit;
+  }
+
+  static Future<int> getProfitThisMonth() async {
+    final dbs = await db();
+    final now = DateTime.now();
+
+    // Format: YYYY-MM
+    final monthString = "${now.year}-${now.month.toString().padLeft(2, '0')}";
+
+    // Ambil semua sales bulan ini (format date: 2025-11-30 10:00:00)
+    final List<Map<String, dynamic>> salesThisMonth = await dbs.query(
+      tableSales,
+      where: "date LIKE ?",
+      whereArgs: ["$monthString%"],
+    );
+
+    int totalProfit = 0;
+
+    for (var sale in salesThisMonth) {
+      int itemId = sale["item_id"];
+      int quantity = sale["quantity"];
+
+      // Ambil data item terkait
+      final List<Map<String, dynamic>> itemResult = await dbs.query(
+        tableItem,
+        where: "id = ?",
+        whereArgs: [itemId],
+      );
+
+      if (itemResult.isNotEmpty) {
+        final item = itemResult.first;
+
+        int modal = item["modal"] ?? 0;
+        int hargaJual = item["price"] ?? 0;
+
+        int profit = (hargaJual - modal) * quantity;
+        totalProfit += profit;
+      }
+    }
+
+    return totalProfit;
   }
 
   // ============================================

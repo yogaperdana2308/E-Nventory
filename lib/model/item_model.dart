@@ -5,6 +5,7 @@ class ItemModel {
   int? id;
   String name;
   int stock;
+  int modal;
   int price;
   String? date;
 
@@ -12,6 +13,7 @@ class ItemModel {
     this.id,
     required this.name,
     required this.stock,
+    required this.modal,
     required this.price,
     this.date,
   });
@@ -21,6 +23,7 @@ class ItemModel {
       'id': id,
       'name': name,
       'stock': stock,
+      'modal': modal,
       'price': price,
       'date': date,
     };
@@ -31,6 +34,7 @@ class ItemModel {
       id: map['id'] != null ? map['id'] as int : null,
       name: map['name'] as String,
       stock: map['stock'] as int,
+      modal: map['modal'] as int,
       price: map['price'] as int,
       date: map['date'] != null ? map['date'] as String : null,
     );

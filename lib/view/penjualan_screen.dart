@@ -39,8 +39,13 @@ class _ListPenjualanInventoryState extends State<ListPenjualanInventory> {
       // Cari item yang sesuai dengan item_id di tabel sales
       final item = itemList.firstWhere(
         (i) => i.id == sale.itemId,
-        orElse: () =>
-            ItemModel(id: 0, name: 'Item telah dihapus', stock: 0, price: 0),
+        orElse: () => ItemModel(
+          id: 0,
+          name: 'Item telah dihapus',
+          stock: 0,
+          modal: 0,
+          price: 0,
+        ),
       );
 
       // Format tanggal (sementara pakai tanggal hari ini, bisa diganti kalau ada field tanggal di DB)

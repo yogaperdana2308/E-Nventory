@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:enventory/Database/db_helper.dart';
 import 'package:enventory/model/firebase_model.dart';
+import 'package:enventory/view/jual_barang.dart';
 import 'package:enventory/widget/inventory_item.dart';
 import 'package:enventory/widget/sales_chart.dart';
+import 'package:enventory/widget/tambahjual_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -16,12 +19,43 @@ class HomePageProjectFirebase extends StatefulWidget {
 
 class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
   UserFirebaseModel? userModel;
+  int todayProfit = 0;
+  int monthlyProfit = 0;
+  int totalStock = 0;
   DateTime today = DateTime.now();
 
   @override
   void initState() {
     super.initState();
     loadUserFromFirestore();
+    loadDashboardData();
+    loadMonthlyProfit();
+  }
+
+  Future<void> loadMonthlyProfit() async {
+    final total = await DbHelper.getProfitThisMonth();
+    setState(() {
+      monthlyProfit = total;
+    });
+  }
+
+  String formatRupiah(int value) {
+    final formatter = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    );
+    return formatter.format(value);
+  }
+
+  Future<void> loadDashboardData() async {
+    int profit = await DbHelper.getTodayProfit();
+    int stock = await DbHelper.getTotalStock();
+
+    setState(() {
+      todayProfit = profit;
+      totalStock = stock;
+    });
   }
 
   Future<void> loadUserFromFirestore() async {
@@ -134,8 +168,8 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
                     child: _dashboardCard(
                       icon: Icons.shopping_cart_outlined,
                       title: "Penjualan Hari Ini",
-                      value: "Rp 1.2M",
-                      percent: "+12%",
+                      value: formatRupiah(todayProfit),
+                      percent: "+12%", // ini kalau mau dinamis tinggal isi aja
                       percentColor: Colors.green,
                       bg: const Color(0xFFE0F7FA),
                     ),
@@ -145,7 +179,7 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
                     child: _dashboardCard(
                       icon: Icons.inventory_2_outlined,
                       title: "Sisa Stok",
-                      value: "3.842",
+                      value: totalStock.toString(),
                       alertIcon: Icons.error_outline,
                       alertColor: Colors.orange,
                       bg: const Color(0xFFFFF3E0),
@@ -197,8 +231,8 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
                         ),
                         SizedBox(height: 6),
                         Text(
-                          "Rp 45.8M",
-                          style: TextStyle(
+                          "Rp ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(monthlyProfit)}",
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 26,
                             fontWeight: FontWeight.bold,
@@ -257,15 +291,15 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Expanded(
-                  //   child: tambahJualButton(
-                  //     label: "Tambah Barang",
-                  //     icon: Icons.add,
-                  //     color: const Color(0xFF4D8DDA),
-                  //     tujuan: InputItem(),
-                  //   ),
-                  // ),
-                  // const SizedBox(width: 4),
+                  Expanded(
+                    child: tambahJualButton(
+                      label: "Jual Barang",
+                      icon: Icons.add,
+                      color: const Color(0xFF4D8DDA),
+                      tujuan: JualBarang(),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
                 ],
               ),
 

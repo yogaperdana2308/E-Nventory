@@ -53,6 +53,7 @@ class _ListStockState extends State<ListStock> {
           id: item.id,
           name: item.name, // tetap tampilkan nama asli pertama kali diinput
           stock: item.stock,
+          modal: item.modal,
           price: item.price,
           date: item.date,
         );
@@ -99,6 +100,9 @@ class _ListStockState extends State<ListStock> {
     final dateController = TextEditingController(
       text: existingItem?.date.toString() ?? '',
     );
+    final modalController = TextEditingController(
+      text: existingItem?.modal.toString() ?? '',
+    );
     Future<void> selectDate(BuildContext context) async {
       final DateTime? pickedDate = await showDatePicker(
         context: context,
@@ -130,6 +134,14 @@ class _ListStockState extends State<ListStock> {
                 decoration: InputDecoration(
                   labelText: 'Stok',
                   suffixText: 'pcs',
+                ),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: modalController,
+                decoration: InputDecoration(
+                  labelText: 'Modal',
+                  prefixText: 'Rp ',
                 ),
                 keyboardType: TextInputType.number,
               ),
@@ -178,6 +190,7 @@ class _ListStockState extends State<ListStock> {
                 id: existingItem?.id,
                 name: nameController.text,
                 stock: int.parse(stockController.text),
+                modal: int.parse(modalController.text),
                 price: int.parse(priceController.text),
                 date: dateController.text,
               );
@@ -194,6 +207,7 @@ class _ListStockState extends State<ListStock> {
                   id: existing.id,
                   name: existing.name,
                   stock: existing.stock + int.parse(stockController.text),
+                  modal: existing.modal,
                   price: int.parse(priceController.text),
                   date: existing.date,
                 );
