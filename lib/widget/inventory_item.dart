@@ -7,6 +7,9 @@ class InventoryItem extends StatelessWidget {
   final Color statusColor;
   final Color statusTextColor;
 
+  /// Tambahan: Widget tambahan yang muncul DI BAWAH "Stok"
+  final Widget? extraInfo;
+
   const InventoryItem({
     super.key,
     required this.name,
@@ -14,6 +17,7 @@ class InventoryItem extends StatelessWidget {
     required this.status,
     required this.statusColor,
     required this.statusTextColor,
+    this.extraInfo, // <-- Tambahan
   });
 
   @override
@@ -26,14 +30,19 @@ class InventoryItem extends StatelessWidget {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment:
+            CrossAxisAlignment.start, // <-- supaya kolom kiri tinggi
         children: [
-          // Kiri: ikon + nama + stok
+          // ==========================
+          //    KIRI (Nama + Stok + Extra Info)
+          // ==========================
           Row(
             children: [
               const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // NAMA BARANG
                   Text(
                     name,
                     style: const TextStyle(
@@ -41,15 +50,26 @@ class InventoryItem extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
+
+                  // STOK
                   Text(
                     "Stok: $stock unit",
                     style: TextStyle(color: Colors.grey[600]),
                   ),
+
+                  // EXTRA INFO (HANYA MUNCUL JIKA ADA)
+                  if (extraInfo != null) ...[
+                    const SizedBox(height: 6),
+                    extraInfo!,
+                  ],
                 ],
               ),
             ],
           ),
-          // Kanan: status
+
+          // ==========================
+          //    KANAN (Status Badge)
+          // ==========================
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(

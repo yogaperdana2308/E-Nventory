@@ -357,7 +357,10 @@ class _ListPenjualanInventoryState extends State<ListPenjualanInventory> {
                     ),
                     TextButton(
                       onPressed: _resetFilter,
-                      child: const Text('Reset'),
+                      child: const Text(
+                        'Reset',
+                        style: TextStyle(color: Colors.red),
+                      ),
                     ),
                   ],
                 ),

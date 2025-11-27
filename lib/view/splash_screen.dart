@@ -2,6 +2,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:enventory/preferences/preferencesHandler.dart';
 import 'package:enventory/view/bottom_navigasi.dart';
 import 'package:enventory/view/login_screen_firebase.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -22,7 +23,8 @@ class _SplashScreenState extends State<SplashScreen> {
     // Tambah sedikit delay agar animasi dan loading bar sempat tampil
     await Future.delayed(const Duration(seconds: 3));
     var isLogin = await PreferenceHandler.getLogin();
-    if (isLogin != null && isLogin == true) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const NavBottom()),
@@ -35,6 +37,19 @@ class _SplashScreenState extends State<SplashScreen> {
         (route) => false,
       );
     }
+    // if (isLogin != null && isLogin == true) {
+    //   Navigator.pushAndRemoveUntil(
+    //     context,
+    //     MaterialPageRoute(builder: (context) => const NavBottom()),
+    //     (route) => false,
+    //   );
+    // } else {
+    //   Navigator.pushAndRemoveUntil(
+    //     context,
+    //     MaterialPageRoute(builder: (context) => const LoginScreenFirebase()),
+    //     (route) => false,
+    //   );
+    // }
   }
 
   @override

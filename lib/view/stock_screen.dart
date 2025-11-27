@@ -136,7 +136,7 @@ class _ListStockState extends State<ListStock> {
               TextField(
                 controller: priceController,
                 decoration: InputDecoration(
-                  labelText: 'Harga',
+                  labelText: 'Harga Jual',
                   prefixText: 'Rp ',
                 ),
                 keyboardType: TextInputType.number,
