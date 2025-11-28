@@ -28,7 +28,7 @@ class tambahJualButton extends StatelessWidget {
       },
       borderRadius: BorderRadius.circular(30),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(30),
@@ -44,7 +44,7 @@ class tambahJualButton extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: Colors.white, size: 20),
+            Icon(icon, color: Colors.white, size: 16),
             const SizedBox(width: 8),
             Text(
               label,

@@ -95,7 +95,7 @@ class _SettingScreenFirebaseState extends State<SettingScreenFirebase> {
               const SizedBox(height: 16),
 
               // ===============================
-              // 🔥 PROFILE — KLIK UNTUK EDIT
+              //  PROFILE — KLIK UNTUK EDIT
               // ===============================
               InkWell(
                 onTap: () async {

@@ -1,0 +1,687 @@
+import 'package:enventory/Service/firebase.dart';
+import 'package:enventory/model/item_firebase.dart';
+import 'package:flutter/material.dart';
+
+class ListPenjualanInventoryFirebase extends StatefulWidget {
+  const ListPenjualanInventoryFirebase({super.key});
+
+  @override
+  State<ListPenjualanInventoryFirebase> createState() =>
+      _ListPenjualanInventoryFirebaseState();
+}
+
+class _ListPenjualanInventoryFirebaseState
+    extends State<ListPenjualanInventoryFirebase> {
+  List<SalesDay> allSalesData = [];
+  List<SalesDay> filteredData = [];
+
+  DateTime? selectedDate;
+  String? selectedItem;
+
+  int totalItemsSold = 0;
+  int totalSales = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSalesData();
+  }
+
+  // =============================================================
+  // LOAD DATA DARI FIREBASE
+  // =============================================================
+  Future<void> _loadSalesData() async {
+    final salesList = await firebaseService.getAllSales();
+    final itemList = await firebaseService.getAllItems();
+
+    Map<String, List<SalesItem>> groupedSales = {};
+
+    for (var sale in salesList) {
+      // cari item berdasarkan id
+      final ItemFirebase item = itemList.firstWhere(
+        (i) => i.id == sale.itemId,
+        orElse: () => ItemFirebase(
+          id: sale.itemId,
+          name: "Item telah dihapus",
+          stock: 0,
+          modal: 0,
+          price: 0,
+          date: "",
+        ),
+      );
+
+      DateTime? parsed = DateTime.tryParse(sale.date);
+      String formattedDate = parsed != null
+          ? _formatDate(parsed)
+          : _formatDate(DateTime.now());
+
+      groupedSales.putIfAbsent(formattedDate, () => []);
+
+      groupedSales[formattedDate]!.add(
+        SalesItem(name: item.name, price: sale.price, qty: sale.quantity),
+      );
+    }
+
+    // MERGE ITEM BERNAMA SAMA DALAM HARI YANG SAMA
+    final List<SalesDay> data = groupedSales.entries.map((entry) {
+      final Map<String, SalesItem> merged = {};
+
+      for (var item in entry.value) {
+        final key = item.name.trim().toLowerCase();
+        if (!merged.containsKey(key)) {
+          merged[key] = item;
+        } else {
+          merged[key] = SalesItem(
+            name: item.name,
+            price: item.price,
+            qty: merged[key]!.qty + item.qty,
+          );
+        }
+      }
+
+      return SalesDay(date: entry.key, items: merged.values.toList());
+    }).toList();
+
+    setState(() {
+      allSalesData = data;
+      filteredData = data;
+      _calculateSummary();
+    });
+  }
+
+  // =============================================================
+  // FILTER TANGGAL
+  // =============================================================
+  Future<void> _filterByDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+      initialDate: DateTime.now(),
+    );
+
+    if (picked != null) {
+      final formatted = _formatDate(picked);
+
+      setState(() {
+        selectedDate = picked;
+        selectedItem = null;
+
+        filteredData = allSalesData
+            .where((day) => day.date == formatted)
+            .toList();
+
+        _calculateSummary();
+      });
+    }
+  }
+
+  // =============================================================
+  // FILTER ITEM
+  // =============================================================
+  Future<void> _filterByItem() async {
+    final items = {
+      for (var d in allSalesData) ...d.items.map((i) => i.name),
+    }.toList();
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text('Pilih Item'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: items.map((item) {
+              return ListTile(
+                title: Text(item),
+                onTap: () {
+                  setState(() {
+                    selectedItem = item;
+                    selectedDate = null;
+
+                    filteredData = allSalesData
+                        .map((day) {
+                          final filteredItems = day.items
+                              .where((i) => i.name == item)
+                              .toList();
+                          if (filteredItems.isEmpty) return null;
+                          return SalesDay(date: day.date, items: filteredItems);
+                        })
+                        .whereType<SalesDay>()
+                        .toList();
+
+                    _calculateSummary();
+                  });
+                  Navigator.pop(context);
+                },
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
+
+  // =============================================================
+  // RESET FILTER
+  // =============================================================
+  void _resetFilter() {
+    setState(() {
+      selectedItem = null;
+      selectedDate = null;
+      filteredData = allSalesData;
+      _calculateSummary();
+    });
+  }
+
+  // =============================================================
+  // CALCULATE SUMMARY
+  // =============================================================
+  void _calculateSummary() {
+    int qty = 0;
+    int amount = 0;
+
+    for (var day in filteredData) {
+      for (var item in day.items) {
+        qty += item.qty;
+        amount += item.price * item.qty;
+      }
+    }
+
+    totalItemsSold = qty;
+    totalSales = amount;
+  }
+
+  // =============================================================
+  // FORMAT TANGGAL
+  // =============================================================
+  String _formatDate(DateTime date) {
+    const hari = [
+      'Senin',
+      'Selasa',
+      'Rabu',
+      'Kamis',
+      'Jumat',
+      'Sabtu',
+      'Minggu',
+    ];
+
+    const bulan = [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
+
+    return "${hari[date.weekday - 1]}, ${date.day} ${bulan[date.month - 1]} ${date.year}";
+  }
+
+  // =============================================================
+  // FORMAT RUPIAH
+  // =============================================================
+  String formatRupiah(int value) {
+    return "Rp ${value.toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.')} ";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FA),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // HEADER DASHBOARD
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color.fromARGB(255, 131, 179, 238),
+                      Color(0xff6D94C5),
+                      Color.fromARGB(255, 103, 148, 204),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Sales Data',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Track your transactions',
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // SUMMARY
+              Row(
+                children: [
+                  Expanded(
+                    child: _InfoCard(
+                      title: 'Items Sold',
+                      value: '$totalItemsSold',
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _InfoCard(
+                      title: 'Total Sales',
+                      value: formatRupiah(totalSales),
+                      highlight: true,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // FILTER BUTTONS
+              Row(
+                children: [
+                  Expanded(
+                    child: _FilterButton(
+                      icon: Icons.calendar_today_outlined,
+                      label: 'Filter by Date',
+                      onTap: _filterByDate,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _FilterButton(
+                      icon: Icons.filter_alt_outlined,
+                      label: 'Filter by Item',
+                      onTap: _filterByItem,
+                    ),
+                  ),
+                ],
+              ),
+
+              if (selectedDate != null || selectedItem != null) ...[
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${selectedDate != null ? _formatDate(selectedDate!) : ''} '
+                      '${selectedItem ?? ''}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: _resetFilter,
+                      child: const Text(
+                        'Reset',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+
+              const SizedBox(height: 30),
+
+              // SALES LIST
+              ...filteredData.map(
+                (day) => Padding(
+                  padding: const EdgeInsets.only(bottom: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header tanggal
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.calendar_today_outlined,
+                            size: 18,
+                            color: Colors.cyan,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            day.date,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Card daftar item
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 5,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            // Header tabel
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Expanded(
+                                    flex: 4,
+                                    child: Text(
+                                      'Item Name',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(
+                                      'Qty',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Text(
+                                      'Total',
+                                      textAlign: TextAlign.end,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Divider(height: 1),
+
+                            // Isi daftar item
+                            ...day.items.map((item) => _SalesRow(item: item)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // ======================
+              // TOTAL KESELURUHAN
+              // ======================
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 20,
+                  horizontal: 24,
+                ),
+                decoration: BoxDecoration(
+                  color: Color(0xffF5EFE6),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Color.fromARGB(255, 243, 232, 216)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Total Keseluruhan',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Total Barang Terjual:',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          '$totalItemsSold pcs',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Total Nominal Penjualan:',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          formatRupiah(totalSales),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// =============================
+// WIDGET TAMBAHAN
+// =============================
+class _InfoCard extends StatelessWidget {
+  final String title;
+  final String value;
+  final bool highlight;
+
+  const _InfoCard({
+    required this.title,
+    required this.value,
+    this.highlight = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(0, 2)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(color: Colors.black54, fontSize: 14),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: TextStyle(
+              color: highlight ? Colors.cyan[700] : Colors.black87,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FilterButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _FilterButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton.icon(
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        side: const BorderSide(color: Colors.black12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ),
+      onPressed: onTap,
+      icon: Icon(icon, color: Colors.black87, size: 20),
+      label: Text(
+        label,
+        style: const TextStyle(
+          color: Colors.black87,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+}
+
+class _SalesRow extends StatelessWidget {
+  final SalesItem item;
+  const _SalesRow({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Color(0xFFE0E0E0), width: 0.8),
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 4,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                ),
+                Text(
+                  'Rp ${item.price.toStringAsFixed(0)}',
+                  style: const TextStyle(color: Colors.black45, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 4,
+                  horizontal: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.cyan.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '${item.qty}',
+                  style: const TextStyle(
+                    color: Colors.cyan,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(
+              'Rp ${(item.price * item.qty).toStringAsFixed(0)}',
+              textAlign: TextAlign.end,
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// =============================
+// MODEL DATA
+// =============================
+class SalesDay {
+  final String date;
+  final List<SalesItem> items;
+
+  SalesDay({required this.date, required this.items});
+}
+
+class SalesItem {
+  final String name;
+  final int price;
+  final int qty;
+
+  SalesItem({required this.name, required this.price, required this.qty});
+}

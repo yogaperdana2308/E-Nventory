@@ -1,6 +1,6 @@
 import 'package:enventory/firebase_options.dart';
 import 'package:enventory/view/bottom_navigasi.dart';
-import 'package:enventory/view/home_screen%20firebase.dart';
+import 'package:enventory/view/home_screen_firebase.dart';
 import 'package:enventory/view/jual_barang.dart';
 import 'package:enventory/view/login_screen_firebase.dart';
 import 'package:enventory/view/register_screen_firebase.dart';

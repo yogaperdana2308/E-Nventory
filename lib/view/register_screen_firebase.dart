@@ -26,7 +26,7 @@ class _RegisterScreenFirebaseState extends State<RegisterScreenFirebase> {
     return Scaffold(body: Stack(children: [buildBackground(), buildLayer()]));
   }
 
-  // 🌈 ============= UI FORM =============
+  //  ============= UI FORM =============
   SafeArea buildLayer() {
     return SafeArea(
       child: SingleChildScrollView(
@@ -136,13 +136,13 @@ class _RegisterScreenFirebaseState extends State<RegisterScreenFirebase> {
 
                         const SizedBox(height: 24),
 
-                        // 🔥 BUTTON REGISTER (INI BAGIAN PALING PENTING)
+                        //  BUTTON REGISTER (INI BAGIAN PALING PENTING)
                         LoginButton(
                           isLogin: true,
                           label: "Register",
                           onPress: () async {
                             if (_formKey.currentState!.validate()) {
-                              // 🔥 Jalankan register Firebase
+                              //  Jalankan register Firebase
                               try {
                                 final newUser = await firebaseService
                                     .registerUser(
