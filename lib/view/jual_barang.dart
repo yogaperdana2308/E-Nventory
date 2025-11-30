@@ -136,7 +136,7 @@ class _JualBarangState extends State<JualBarang> {
                   borderSide: BorderSide.none,
                 ),
               ),
-              value: selectedItem,
+              initialValue: selectedItem,
               onChanged: (value) {
                 setState(() {
                   selectedItem = value;
@@ -310,7 +310,7 @@ class _JualBarangState extends State<JualBarang> {
                         return;
                       }
 
-                      // 🔹 Update item
+                      // Update item
                       final updatedItem = ItemModel(
                         id: selectedItem!.id,
                         name: selectedItem!.name,
