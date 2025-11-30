@@ -259,9 +259,9 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
             ],
           ),
           const Spacer(),
-          _headerIcon(Icons.search),
-          const SizedBox(width: 10),
-          _headerIcon(Icons.notifications_none_outlined),
+          // _headerIcon(Icons.search),
+          // const SizedBox(width: 10),
+          // _headerIcon(Icons.notifications_none_outlined),
         ],
       ),
     );
