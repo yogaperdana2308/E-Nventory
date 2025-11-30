@@ -65,7 +65,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
       actions: [
         TextButton(
           onPressed: loading ? null : () => Navigator.pop(context, false),
-          child: const Text("Cancel"),
+          child: Text("Cancel", style: TextStyle(color: Colors.black)),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -81,7 +81,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                     strokeWidth: 2,
                   ),
                 )
-              : const Text("Save"),
+              : Text("Save", style: TextStyle(color: Colors.white)),
         ),
       ],
     );

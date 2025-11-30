@@ -142,43 +142,44 @@ class _LoginScreenFirebaseState extends State<LoginScreenFirebase> {
                             },
                           ),
 
-                          Row(
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    box = !box;
-                                  });
-                                },
-                                icon: Row(
-                                  children: [
-                                    Icon(
-                                      size: 18,
-                                      box
-                                          ? Icons.check_box_rounded
-                                          : Icons.check_box_outline_blank,
-                                    ),
-                                    const Text(
-                                      'Remember me',
-                                      style: TextStyle(fontSize: 12),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Spacer(),
-                              TextButton(
-                                onPressed: () {},
-                                child: const Text(
-                                  'Forgot Password ?',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF4D81E7),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                          // Row(
+                          //   children: [
+                          //     IconButton(
+                          //       onPressed: () {
+                          //         setState(() {
+                          //           box = !box;
+                          //         });
+                          //       },
+                          //       icon: Row(
+                          //         children: [
+                          //           Icon(
+                          //             size: 18,
+                          //             box
+                          //                 ? Icons.check_box_rounded
+                          //                 : Icons.check_box_outline_blank,
+                          //           ),
+                          //           const Text(
+                          //             'Remember me',
+                          //             style: TextStyle(fontSize: 12),
+                          //           ),
+                          //         ],
+                          //       ),
+                          //     ),
+                          //     const Spacer(),
+                          //     TextButton(
+                          //       onPressed: () {},
+                          //       child: const Text(
+                          //         'Forgot Password ?',
+                          //         style: TextStyle(
+                          //           fontSize: 12,
+                          //           fontWeight: FontWeight.bold,
+                          //           color: Color(0xFF4D81E7),
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
+                          SizedBox(height: 24),
 
                           // ===================== BUTTON LOGIN =====================
                           LoginButton(

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:enventory/model/sales_model_firebase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 import '../model/firebase_model.dart';
 import '../model/item_firebase.dart';
@@ -176,6 +177,47 @@ class FirebaseService {
   /// Hapus penjualan
   Future<void> deleteSales(String id) async {
     await firestore.collection("sales").doc(id).delete();
+  }
+
+  Future<Map<int, int>> getDailySalesLast7Days() async {
+    final now = DateTime.now();
+
+    final start = now.subtract(const Duration(days: 6));
+    final startStr = DateFormat('yyyy-MM-dd').format(start);
+    final endStr = DateFormat('yyyy-MM-dd').format(now);
+
+    final snap = await firestore
+        .collection("sales")
+        .where("date", isGreaterThanOrEqualTo: startStr)
+        .where("date", isLessThanOrEqualTo: endStr)
+        .get();
+
+    // Inisialisasi 7 hari (0–6) dengan nilai 0
+    final Map<int, int> result = {for (var i = 0; i < 7; i++) i: 0};
+
+    for (var doc in snap.docs) {
+      final data = doc.data();
+
+      final dateStr = (data['date'] ?? '') as String;
+      if (dateStr.isEmpty) continue;
+
+      final date = DateTime.tryParse(dateStr);
+      if (date == null) continue;
+
+      final diff = now.difference(date).inDays;
+      // Pastikan hanya 0–6 hari terakhir
+      if (diff < 0 || diff > 6) continue;
+
+      final index = 6 - diff;
+
+      // Cast num → int dengan aman
+      final salesNum = data['sales'] as num? ?? 0;
+      final sales = salesNum.toInt();
+
+      result[index] = (result[index] ?? 0) + sales;
+    }
+
+    return result;
   }
 }
 

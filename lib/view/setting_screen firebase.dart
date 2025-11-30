@@ -94,6 +94,13 @@ class _SettingScreenFirebaseState extends State<SettingScreenFirebase> {
 
               const SizedBox(height: 16),
 
+              Text(
+                "Account",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+
+              const SizedBox(height: 8),
+
               // ===============================
               //  PROFILE — KLIK UNTUK EDIT
               // ===============================
@@ -180,13 +187,6 @@ class _SettingScreenFirebaseState extends State<SettingScreenFirebase> {
               ),
 
               const SizedBox(height: 24),
-
-              const Text(
-                "Account",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-
-              const SizedBox(height: 8),
 
               // ===============================
               // 🔥 LOGOUT

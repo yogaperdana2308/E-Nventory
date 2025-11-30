@@ -21,6 +21,23 @@ class _JualBarangFirebaseState extends State<JualBarangFirebase> {
   double totalPrice = 0;
   List<ItemFirebase>? items; // ← awalnya null
   ItemFirebase? selectedItem;
+  DateTime? earliestSellDate;
+
+  DateTime? _parseItemDate(String? raw) {
+    if (raw == null || raw.isEmpty) return null;
+
+    try {
+      // Coba format dd/MM/yyyy (dari StockScreenfirebase)
+      return DateFormat('dd/MM/yyyy').parse(raw);
+    } catch (_) {
+      try {
+        // Cadangan kalau ada data lama format yyyy-MM-dd
+        return DateFormat('dd/MM?yyyy').parse(raw);
+      } catch (_) {
+        return null;
+      }
+    }
+  }
 
   final currencyFormat = NumberFormat.currency(symbol: 'Rp ', decimalDigits: 0);
 
@@ -50,16 +67,31 @@ class _JualBarangFirebaseState extends State<JualBarangFirebase> {
   }
 
   Future<void> selectDate(BuildContext context) async {
-    final DateTime? pickedDate = await showDatePicker(
+    if (earliestSellDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Pilih item terlebih dahulu!"),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    final DateTime minDate = earliestSellDate!;
+    final DateTime today = DateTime.now();
+
+    final initialPick = today.isBefore(minDate) ? minDate : today;
+
+    final picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
+      initialDate: initialPick,
+      firstDate: minDate, // tidak bisa pilih sebelum tanggal masuk barang
       lastDate: DateTime(2101),
     );
 
-    if (pickedDate != null) {
+    if (picked != null) {
       setState(() {
-        dateController.text = DateFormat('dd/MM/yyyy').format(pickedDate);
+        dateController.text = DateFormat('dd/MM/yyyy').format(picked);
       });
     }
   }
@@ -172,7 +204,7 @@ class _JualBarangFirebaseState extends State<JualBarangFirebase> {
                   borderSide: BorderSide.none,
                 ),
               ),
-              value: selectedItem,
+              initialValue: selectedItem,
               items: (items ?? [])
                   .map(
                     (item) =>
@@ -180,9 +212,29 @@ class _JualBarangFirebaseState extends State<JualBarangFirebase> {
                   )
                   .toList(),
               onChanged: (value) {
+                if (value == null) return;
+
+                // parse tanggal dari item
+                final parsedDate = _parseItemDate(value.date);
+
+                if (parsedDate == null) {
+                  // kalau tanggal di Firestore kosong / format aneh
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        "Tanggal barang tidak valid, cek kembali di menu Stock.",
+                      ),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                  return;
+                }
+
                 setState(() {
                   selectedItem = value;
-                  priceController.text = value?.price.toString() ?? '0';
+                  priceController.text = value.price.toString();
+                  earliestSellDate =
+                      parsedDate; // ← ini yang dipakai date picker
                 });
               },
             ),
@@ -207,7 +259,8 @@ class _JualBarangFirebaseState extends State<JualBarangFirebase> {
                 ),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.calendar_month_outlined),
-                  onPressed: () => selectDate(context),
+                  onPressed: () =>
+                      selectDate(context), // ← pakai fungsi di atas
                 ),
               ),
             ),

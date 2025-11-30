@@ -25,13 +25,29 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
   int monthlyProfit = 0;
   int totalStock = 0;
   DateTime today = DateTime.now();
+  Map<int, int> dailySales = {};
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _inventorySectionKey = GlobalKey();
+  bool showAllInventory = false;
 
   @override
   void initState() {
     super.initState();
-    loadUserFromFirestore();
-    loadDashboardData();
-    loadMonthlyProfit();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadUserFromFirestore();
+      loadDashboardData();
+      loadMonthlyProfit();
+      loadDailySales(); // ← penting
+    });
+  }
+
+  Future<void> loadDailySales() async {
+    final data = await firebaseService.getDailySalesLast7Days();
+
+    setState(() {
+      dailySales = data;
+    });
   }
 
   // =================================================
@@ -138,6 +154,7 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
+          controller: ScrollController(),
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -183,7 +200,10 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
 
               const SizedBox(height: 24),
 
-              _buildInventoryDummy(),
+              Container(
+                key: _inventorySectionKey, // ← tambahkan ini
+                child: _buildInventoryReal(), // versi non-dummy
+              ),
 
               const SizedBox(height: 30),
             ],
@@ -320,12 +340,11 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
         children: [
           Row(
             children: [
-              Text(
-                "Statistik Penjualan",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              const Text(
+                "Statistik Inventori",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
               ),
               Spacer(),
-
               SizedBox(
                 height: 32,
                 child: tambahJualButton(
@@ -337,59 +356,158 @@ class _HomePageProjectFirebaseState extends State<HomePageProjectFirebase> {
               ),
             ],
           ),
+
           SizedBox(height: 10),
-          SalesChart(),
+          SalesChart(dailySales: dailySales),
         ],
       ),
     );
   }
 
-  Widget _buildInventoryDummy() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+  Future<List<ItemFirebase>> getInventoryItems() async {
+    final items = await firebaseService.getAllItems();
+
+    // urutkan berdasarkan stok terendah
+    items.sort((a, b) => a.stock.compareTo(b.stock));
+
+    return items;
+  }
+
+  Widget _buildInventoryReal() {
+    return FutureBuilder<List<ItemFirebase>>(
+      future: getInventoryItems(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final items = snapshot.data!;
+        final statusText = items.isEmpty ? "Belum ada data inventori" : "";
+
+        // Tentukan apakah menampilkan 3 item atau semua item
+        final displayedItems = showAllInventory
+            ? items
+            : items.take(3).toList();
+
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Status Inventori",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 16),
-          InventoryItem(
-            name: "Minyak Goreng",
-            stock: 42,
-            status: "Stok Rendah",
-            statusColor: Colors.orange.shade100,
-            statusTextColor: Colors.orange,
-            extraInfo: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                SizedBox(height: 4),
-                Text(
-                  "Modal: Rp 12.000",
-                  style: TextStyle(fontSize: 12, color: Colors.black54),
+
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // =======================================================
+              //     HEADER (WRAP)
+              // =======================================================
+              Wrap(
+                spacing: 8,
+                runSpacing: 6,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  const Text(
+                    "Status Inventori",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
+
+                  // Tombol Lihat Semua
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        showAllInventory = !showAllInventory;
+                      });
+                    },
+                    child: Text(
+                      showAllInventory ? "Tampilkan 3 Item" : "Lihat Semua",
+                      style: const TextStyle(
+                        color: Color(0xFF4D8DDA),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+
+                  // Status text
+                  Text(
+                    statusText,
+                    style: const TextStyle(color: Colors.black54, fontSize: 14),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              // =======================================================
+              //   TAMPILKAN ITEM (BISA 3 ATAU SEMUA ITEM)
+              // =======================================================
+              if (items.isEmpty)
+                const Text(
+                  "Tidak ada data inventori",
+                  style: TextStyle(color: Colors.black54),
                 ),
-                Text(
-                  "Harga Jual: Rp 14.000",
-                  style: TextStyle(fontSize: 12, color: Colors.black54),
-                ),
-              ],
-            ),
+
+              ...displayedItems.map((item) {
+                // status otomatis
+                String status;
+                Color statusColor;
+                Color statusTextColor;
+
+                if (item.stock == 0) {
+                  status = "Habis";
+                  statusColor = Colors.red.shade100;
+                  statusTextColor = Colors.red.shade800;
+                } else if (item.stock < 10) {
+                  status = "Stok Rendah";
+                  statusColor = Colors.orange.shade100;
+                  statusTextColor = Colors.orange.shade800;
+                } else {
+                  status = "Aman";
+                  statusColor = Colors.green.shade100;
+                  statusTextColor = Colors.green.shade800;
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: InventoryItem(
+                    name: item.name,
+                    stock: item.stock,
+                    status: status,
+                    statusColor: statusColor,
+                    statusTextColor: statusTextColor,
+                    extraInfo: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Modal: Rp ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(item.modal)}",
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.black54,
+                          ),
+                        ),
+                        Text(
+                          "Harga Jual: Rp ${NumberFormat.currency(locale: 'id_ID', symbol: '', decimalDigits: 0).format(item.price)}",
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 

@@ -189,7 +189,9 @@ class _StockScreenFirebaseState extends State<StockScreenfirebase> {
                 stock: int.parse(stockController.text),
                 modal: int.parse(modalController.text),
                 price: int.parse(priceController.text),
-                date: dateController.text,
+                date: DateFormat(
+                  'dd/MM/yyyy',
+                ).format(DateFormat('dd/MM/yyyy').parse(dateController.text)),
               );
 
               if (existingItem == null) {
@@ -211,30 +213,30 @@ class _StockScreenFirebaseState extends State<StockScreenfirebase> {
   // ============================================================
   // DELETE ITEM
   // ============================================================
-  void _deleteItem(ItemFirebase item) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Hapus Item'),
-        content: Text('Hapus item "${item.name}" ?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Batal'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () async {
-              await firebaseService.deleteItem(item.id!);
-              getData();
-              Navigator.pop(context);
-            },
-            child: Text('Hapus'),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _deleteItem(ItemFirebase item) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: Text('Hapus Item'),
+  //       content: Text('Hapus item "${item.name}" ?'),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: Text('Batal'),
+  //         ),
+  //         ElevatedButton(
+  //           style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+  //           onPressed: () async {
+  //             await firebaseService.deleteItem(item.id!);
+  //             getData();
+  //             Navigator.pop(context);
+  //           },
+  //           child: Text('Hapus'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   // ============================================================
   // FILTER
@@ -357,7 +359,7 @@ class _StockScreenFirebaseState extends State<StockScreenfirebase> {
 
               // SEARCH BAR
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: 0),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
@@ -381,7 +383,7 @@ class _StockScreenFirebaseState extends State<StockScreenfirebase> {
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                 ),
@@ -428,10 +430,10 @@ class _StockScreenFirebaseState extends State<StockScreenfirebase> {
                                   onPressed: () =>
                                       _showItemDialog(existingItem: item),
                                 ),
-                                IconButton(
-                                  icon: Icon(Icons.delete, color: Colors.red),
-                                  onPressed: () => _deleteItem(item),
-                                ),
+                                // IconButton(
+                                //   icon: Icon(Icons.delete, color: Colors.red),
+                                //   onPressed: () => _deleteItem(item),
+                                // ),
                               ],
                             ),
                           ),

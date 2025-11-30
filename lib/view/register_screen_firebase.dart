@@ -87,7 +87,6 @@ class _RegisterScreenFirebaseState extends State<RegisterScreenFirebase> {
 
                         // USERNAME
                         buildTitle("Username"),
-                        const SizedBox(height: 12),
                         buildTextField(
                           hintText: "Enter your username",
                           controller: usernameC,
@@ -100,8 +99,8 @@ class _RegisterScreenFirebaseState extends State<RegisterScreenFirebase> {
                         ),
 
                         // EMAIL
+                        SizedBox(height: 12),
                         buildTitle("Email Address"),
-                        const SizedBox(height: 12),
                         buildTextField(
                           hintText: "Enter your email",
                           controller: emailC,
@@ -117,8 +116,9 @@ class _RegisterScreenFirebaseState extends State<RegisterScreenFirebase> {
                         ),
 
                         // PASSWORD
+                        SizedBox(height: 12),
+
                         buildTitle("Password"),
-                        const SizedBox(height: 12),
                         buildTextField(
                           hintText: "Enter your password",
                           isPassword: true,
