@@ -204,7 +204,7 @@ class _JualBarangFirebaseState extends State<JualBarangFirebase> {
                   borderSide: BorderSide.none,
                 ),
               ),
-              initialValue: selectedItem,
+              value: selectedItem,
               items: (items ?? [])
                   .map(
                     (item) =>
